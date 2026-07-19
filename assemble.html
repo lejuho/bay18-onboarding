@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BAY 18기 · 나의 트랜잭션 생애주기 지도</title>
+<style>
+:root{
+  --bg:#060f22; --panel:rgba(255,255,255,.05); --line:rgba(150,190,255,.16);
+  --ink:#eef5ff; --ink-dim:#9fb4d6; --card:#f7faff; --card-ink:#15294b;
+  --blue:#4b8cff; --cyan:#53dcff; --green:#4fdf9c; --amber:#ffd166; --red:#ff6d88;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","D2Coding",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  padding:clamp(28px,5vh,60px) clamp(16px,5vw,60px);
+  background-image:radial-gradient(60vw 50vh at 85% 5%,rgba(79,223,156,.12),transparent 60%),
+                   radial-gradient(50vw 50vh at 5% 95%,rgba(75,140,255,.14),transparent 60%)}
+.wrap{width:min(980px,100%);margin:0 auto}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;letter-spacing:.12em;color:var(--cyan);flex-wrap:wrap}
+.eyebrow .wk{font-family:var(--mono);background:rgba(83,220,255,.12);border:1px solid rgba(83,220,255,.35);border-radius:999px;padding:4px 12px;font-weight:700}
+.eyebrow a{color:var(--ink-dim);text-decoration:none;margin-left:auto;font-size:13px}
+h1{font-size:clamp(30px,5vw,50px);line-height:1.12;margin:0 0 10px;letter-spacing:-.03em;font-weight:800}
+h1 em{font-style:normal;color:var(--green)}
+.sub{color:var(--ink-dim);font-size:15.5px;line-height:1.6;margin-bottom:8px}
+.prog{font-family:var(--mono);color:var(--green);font-weight:800;font-size:15px;margin-bottom:26px}
+.map{position:relative;padding-left:34px;margin-bottom:34px}
+.map::before{content:"";position:absolute;left:12px;top:8px;bottom:8px;width:3px;border-radius:99px;
+  background:linear-gradient(180deg,var(--blue),var(--cyan),var(--green))}
+.stagec{position:relative;margin-bottom:16px;background:var(--card);color:var(--card-ink);border-radius:16px;padding:18px 20px}
+.stagec::before{content:"";position:absolute;left:-29px;top:22px;width:17px;height:17px;border-radius:50%;
+  background:var(--bg);border:4px solid #3a5d94}
+.stagec.done::before{border-color:var(--green);box-shadow:0 0 14px rgba(79,223,156,.7)}
+.stagec .head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.stagec .wt{font-family:var(--mono);font-size:12px;color:#5a6f95;letter-spacing:.1em}
+.stagec b{font-size:17px}
+.stagec .miss{font-size:14px;color:#8a9cbd}
+.line{display:flex;gap:10px;font-size:14.5px;line-height:1.55;padding:5px 0;border-top:1px dashed #e2e9f6;color:#31507f}
+.line:first-of-type{border-top:0}
+.line .k{font-family:var(--mono);font-size:12px;color:#7a8db0;flex:0 0 auto;padding-top:2px;min-width:74px}
+.tools{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.tools h3{margin:0 0 6px;font-size:17px}
+.tools p{margin:0 0 12px;font-size:14px;color:var(--ink-dim);line-height:1.6}
+textarea{width:100%;min-height:130px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:11px;
+  color:#eaf2ff;padding:12px;font-family:var(--mono);font-size:13px;line-height:1.6;resize:vertical}
+textarea:focus{outline:2px solid var(--cyan)}
+button{border:0;border-radius:12px;background:#2d66c8;color:#fff;padding:11px 17px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit}
+button:hover{filter:brightness(1.12)}
+.btn-ghost{background:rgba(255,255,255,.1);color:#dcebff;border:1px solid var(--line)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#10213e;
+  padding:12px 20px;border-radius:11px;opacity:0;transition:.25s;z-index:120;font-weight:700;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow"><span class="wk">지도</span> 나의 트랜잭션 생애주기 <a href="index.html">← 허브로</a></div>
+  <h1>6주의 산출물이 <em>한 장의 지도</em>가 됩니다</h1>
+  <p class="sub" id="hello">매주 작성한 산출물이 자동으로 아래 단계에 꽂힙니다.</p>
+  <div class="prog" id="prog">0 / 6 완료</div>
+
+  <div class="map" id="map"></div>
+
+  <div class="tools">
+    <h3>다른 기기에서 작성했다면</h3>
+    <p>각 주차에서 “복사”한 산출물(또는 TXT 내용)을 아래에 통째로 붙여넣고 불러오기를 누르세요. <span class="mono">[BAY18-W#]</span> 태그 기준으로 자동 분류되어 이 브라우저에 저장됩니다.</p>
+    <textarea id="paste" placeholder="[BAY18-W1] 상태 머신&#10;S0 현재 상태: …&#10;…&#10;[BAY18-W2] 트랜잭션 검증과 전파&#10;…"></textarea>
+    <div class="btnrow">
+      <button onclick="importPaste()">붙여넣은 내용 불러오기</button>
+      <button class="btn-ghost" onclick="copyAll()">지도 전체 복사</button>
+      <button class="btn-ghost" onclick="downloadAll()">지도 TXT 저장</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const WEEKS=[
+  {n:1,t:'블록체인과 상태 머신',s:'상태가 바뀐다'},
+  {n:2,t:'트랜잭션 검증과 전파',s:'대기실까지의 길'},
+  {n:3,t:'EVM 실행과 토큰',s:'상태를 바꾸는 계산기'},
+  {n:4,t:'트랜잭션과 상태 변화',s:'실행이 남기는 것'},
+  {n:5,t:'거래 포함과 Finality',s:'언제 확정되는가'},
+  {n:6,t:'프로젝트의 위험과 회복 설계',s:'무엇을 믿고 있는가'},
+];
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1700)}
+function getW(n){try{return JSON.parse(localStorage.getItem('bay18.w'+n)||'null')}catch(e){return null}}
+function parseLines(text){
+  // 헤더([BAY18-W#] …) 다음 줄들을 "키: 값"으로 분해
+  return text.split('\n').slice(1).map(l=>{
+    const i=l.indexOf(':');
+    return i>0?{k:l.slice(0,i).trim(),v:l.slice(i+1).trim()}:{k:'',v:l.trim()};
+  }).filter(l=>l.v);
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function render(){
+  let done=0;
+  document.getElementById('map').innerHTML=WEEKS.map(w=>{
+    const d=getW(w.n);
+    const has=d&&d.text&&parseLines(d.text).length;
+    if(has)done++;
+    const body=has
+      ?parseLines(d.text).map(l=>`<div class="line"><span class="k">${esc(l.k)}</span><span>${esc(l.v)}</span></div>`).join('')
+      :`<div class="miss">아직 없음 — ${w.n<=2?`<a href="w${w.n}.html" style="color:#2d66c8">W${w.n} 열기</a>`:'수업 후 채워집니다'}</div>`;
+    return `<div class="stagec ${has?'done':''}">
+      <div class="head"><span class="wt">W${w.n} · ${esc(w.s)}</span><b>${esc(w.t)}</b></div>${body}</div>`;
+  }).join('');
+  document.getElementById('prog').textContent=done+' / 6 완료';
+  const nm=localStorage.getItem('bay18.name');
+  if(nm)document.getElementById('hello').textContent=nm+' 님의 산출물이 자동으로 아래 단계에 꽂힙니다.';
+}
+function importPaste(){
+  const raw=document.getElementById('paste').value;
+  const parts=raw.split(/(?=\[BAY18-W\d\])/).map(s=>s.trim()).filter(Boolean);
+  let cnt=0;
+  for(const p of parts){
+    const m=p.match(/^\[BAY18-W(\d)\]/);
+    if(!m)continue;
+    try{localStorage.setItem('bay18.w'+m[1],JSON.stringify({text:p,ts:Date.now(),imported:true}));cnt++}catch(e){}
+  }
+  if(cnt){render();toast(cnt+'개 주차를 불러왔습니다.')}
+  else toast('[BAY18-W#] 태그를 찾지 못했습니다.');
+}
+function allText(){
+  const nm=localStorage.getItem('bay18.name')||'';
+  const chunks=WEEKS.map(w=>{const d=getW(w.n);return d&&d.text?d.text:null}).filter(Boolean);
+  return `BAY 18기 · 트랜잭션 생애주기 지도${nm?' — '+nm:''}\n\n`+chunks.join('\n\n');
+}
+function copyAll(){
+  navigator.clipboard.writeText(allText()).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=allText();document.body.appendChild(ta);
+    ta.select();document.execCommand('copy');ta.remove();
+  });
+  toast('지도 전체를 복사했습니다.');
+}
+function downloadAll(){
+  const blob=new Blob([allText()+'\n'],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='BAY18_생애주기지도.txt';a.click();URL.revokeObjectURL(url);
+}
+render();
+</script>
+</body>
+</html>

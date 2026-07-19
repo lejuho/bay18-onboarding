@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BAY 18기 · 1주차 — 블록체인은 상태를 바꾸는 기계다</title>
+<style>
+/* ===== 시리즈 공통 토큰 (6주 통일) ===== */
+:root{
+  --bg:#060f22; --bg-soft:#0b1a35; --panel:rgba(255,255,255,.05); --line:rgba(150,190,255,.16);
+  --ink:#eef5ff; --ink-dim:#9fb4d6; --card:#f7faff; --card-ink:#15294b; --card-dim:#5a6f95;
+  --blue:#4b8cff; --cyan:#53dcff; --green:#4fdf9c; --red:#ff6d88; --amber:#ffd166; --purple:#948fff;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","D2Coding",Consolas,monospace;
+  --r-lg:26px; --r-md:16px; --r-sm:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  -webkit-font-smoothing:antialiased}
+section{min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;
+  padding:clamp(40px,6vh,70px) clamp(18px,6vw,80px);position:relative;overflow:hidden}
+/* 섹션마다 다른 위치의 글로우 → 단조로움 제거 */
+section::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5}
+section:nth-child(1)::before{background:radial-gradient(60vw 60vh at 18% 20%,rgba(75,140,255,.22),transparent 60%)}
+section:nth-child(2)::before{background:radial-gradient(55vw 55vh at 85% 15%,rgba(83,220,255,.14),transparent 60%)}
+section:nth-child(3)::before{background:radial-gradient(55vw 55vh at 10% 85%,rgba(148,143,255,.14),transparent 60%)}
+section:nth-child(4)::before{background:radial-gradient(60vw 60vh at 88% 80%,rgba(79,223,156,.10),transparent 60%)}
+section:nth-child(5)::before{background:radial-gradient(50vw 60vh at 50% 0%,rgba(255,209,102,.10),transparent 60%)}
+section:nth-child(6)::before{background:radial-gradient(55vw 55vh at 15% 20%,rgba(83,220,255,.12),transparent 60%)}
+section:nth-child(7)::before{background:radial-gradient(55vw 55vh at 80% 25%,rgba(75,140,255,.16),transparent 60%)}
+.wrap{width:min(1200px,100%);position:relative;z-index:1}
+
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;letter-spacing:.12em;color:var(--cyan)}
+.eyebrow .wk{font-family:var(--mono);background:rgba(83,220,255,.12);border:1px solid rgba(83,220,255,.35);
+  border-radius:999px;padding:4px 12px;font-weight:700;letter-spacing:.05em}
+.eyebrow .min{margin-left:auto;font-family:var(--mono);color:var(--ink-dim);letter-spacing:0;font-size:12px}
+h1{font-size:clamp(40px,6.5vw,80px);line-height:1.04;margin:0 0 20px;letter-spacing:-.035em;font-weight:800}
+h2{font-size:clamp(30px,4.6vw,54px);line-height:1.1;margin:0 0 22px;letter-spacing:-.03em;font-weight:800}
+h1 em,h2 em{font-style:normal;color:var(--cyan)}
+p{font-size:18px;line-height:1.7;color:#dfeaff;margin:.4em 0}
+.lead{font-size:clamp(20px,2.6vw,27px);max-width:880px;color:#eaf2ff}
+.dim{color:var(--ink-dim)}
+.mono{font-family:var(--mono)}
+
+button{border:0;border-radius:12px;background:#2d66c8;color:#fff;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s,filter .15s}
+button:hover{filter:brightness(1.12)} button:active{transform:scale(.97)}
+button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.btn-ghost{background:rgba(255,255,255,.1);color:#dcebff;border:1px solid var(--line)}
+.btn-red{background:#b13b52}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(18px,3vw,30px)}
+.caption{margin-top:16px;display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.55;color:#cfe0ff;min-height:44px}
+.caption::before{content:"▸";color:var(--cyan);flex:0 0 auto;translate:0 1px}
+.caption.ok{color:#c9f5df}.caption.ok::before{content:"✓";color:var(--green)}
+.caption.bad{color:#ffd4dd}.caption.bad::before{content:"✕";color:var(--red)}
+
+/* ===== HERO ===== */
+.formula{display:inline-flex;align-items:center;gap:14px;margin:26px 0 8px;padding:16px 22px;border-radius:var(--r-md);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-family:var(--mono);font-size:clamp(18px,2.6vw,26px);font-weight:700}
+.formula .s0{color:var(--ink-dim)} .formula .tx{color:var(--amber);animation:pulse 2.6s infinite}
+.formula .s1{color:var(--green)} .formula .ar{color:var(--cyan)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.agenda{display:grid;grid-template-columns:2fr 18fr 7fr 3fr;gap:6px;margin-top:34px;max-width:760px}
+.agenda>div{border-radius:var(--r-sm);padding:10px 12px;font-size:13px;line-height:1.4;border:1px solid var(--line)}
+.agenda b{display:block;font-family:var(--mono);font-size:15px}
+.ag1{background:rgba(159,180,214,.10)} .ag2{background:rgba(75,140,255,.16)}
+.ag3{background:rgba(148,143,255,.15)} .ag4{background:rgba(79,223,156,.14)}
+
+/* ===== 상태판 (시그니처) ===== */
+.board{display:grid;grid-template-columns:1fr minmax(120px,1.1fr) 1fr;gap:clamp(12px,2.5vw,28px);align-items:stretch}
+.acct{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.acct .who{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.ava{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:19px}
+.ava-a{background:linear-gradient(135deg,#4b8cff,#53dcff)} .ava-b{background:linear-gradient(135deg,#948fff,#5ec8ff)}
+.balwrap{width:64px;height:150px;border-radius:12px;background:#e6edf9;position:relative;overflow:hidden;margin-top:4px}
+.bal{position:absolute;left:0;right:0;bottom:0;border-radius:12px 12px 0 0;background:linear-gradient(180deg,#53dcff,#4b8cff);transition:height 1s cubic-bezier(.4,0,.2,1)}
+.bal.grow{background:linear-gradient(180deg,#7cf0bd,#35c98a)}
+.balnum{font-family:var(--mono);font-size:34px;font-weight:800;transition:color .4s}
+.balnum.up{color:#1e9e64}.balnum.down{color:#2d66c8}
+.track{position:relative;display:flex;align-items:center;min-height:150px}
+.rail{position:absolute;left:0;right:0;top:50%;height:4px;translate:0 -50%;border-radius:99px;
+  background:linear-gradient(90deg,rgba(75,140,255,.7),rgba(83,220,255,.7))}
+.rail::after{content:"";position:absolute;right:-2px;top:50%;translate:0 -50%;
+  border-left:14px solid rgba(83,220,255,.9);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.chip{position:absolute;left:0;top:50%;translate:0 -50%;background:#fff;color:#15294b;border-radius:12px;padding:10px 12px;
+  font-family:var(--mono);font-weight:800;font-size:15px;line-height:1.2;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.4);
+  transition:left 1.2s cubic-bezier(.4,0,.2,1),background .3s,color .3s;white-space:nowrap;z-index:2}
+.chip.go{left:calc(100% - 74px)}
+.chip.mid{left:calc(50% - 37px)}
+.chip.rejected{background:#ff6d88;color:#fff;animation:shake .5s}
+@keyframes shake{0%,100%{margin-top:0}20%{margin-top:-7px}40%{margin-top:5px}60%{margin-top:-4px}80%{margin-top:2px}}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.step{flex:1 1 140px;display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:14px;color:var(--ink-dim);transition:.35s}
+.step i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;
+  background:rgba(255,255,255,.12);flex:0 0 auto}
+.step.on{background:rgba(75,140,255,.2);border-color:rgba(75,140,255,.5);color:#dcebff}
+.step.done{background:rgba(79,223,156,.16);border-color:rgba(79,223,156,.5);color:#d7f7e6}
+.step.done i{background:var(--green);color:#04321c}.step.done i::before{content:"✓"}
+.step.fail{background:rgba(255,109,136,.16);border-color:rgba(255,109,136,.55);color:#ffdbe2}
+.step.fail i{background:var(--red);color:#fff}.step.fail i::before{content:"✕"}
+
+/* ===== 순서 분기 (미니 상태판 2개) ===== */
+.orderwrap{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(10px,2vw,22px);align-items:stretch}
+.nodeboard{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:18px;transition:box-shadow .5s,outline .5s;outline:2px solid transparent}
+.nodeboard header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.nodeboard header b{font-size:17px}
+.orderseq{font-family:var(--mono);font-size:12.5px;background:#e9f0fc;color:#3d5885;border-radius:99px;padding:5px 10px}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.slot{text-align:center}
+.slot .nm{font-size:13px;color:var(--card-dim);font-weight:700}
+.mbarwrap{height:96px;width:38px;margin:6px auto;background:#e6edf9;border-radius:9px;position:relative;overflow:hidden}
+.mbar{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#53dcff,#4b8cff);border-radius:9px 9px 0 0;transition:height .8s cubic-bezier(.4,0,.2,1)}
+.mnum{font-family:var(--mono);font-weight:800;font-size:20px}
+.txtags{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.txtag{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:13px;
+  background:#eef3fc;border:1px solid #d7e2f5;border-radius:9px;padding:8px 11px;color:#31507f;transition:.35s}
+.txtag .st{font-weight:800}
+.txtag.run{background:#dcebff;border-color:#9cc0f5}
+.txtag.ok{background:#def7ea;border-color:#8fe0b8;color:#116340}
+.txtag.no{background:#ffe3e9;border-color:#f5a3b4;color:#8c2340;text-decoration:line-through}
+.neq{align-self:center;font-family:var(--mono);font-size:clamp(30px,4vw,52px);font-weight:800;color:var(--ink-dim);opacity:.35;transition:.6s;padding:0 2px}
+.neq.hot{opacity:1;color:var(--red);text-shadow:0 0 24px rgba(255,109,136,.6)}
+.nodeboard.diverged-a{outline-color:#4b8cff;box-shadow:0 0 34px rgba(75,140,255,.35)}
+.nodeboard.diverged-b{outline-color:#ffb054;box-shadow:0 0 34px rgba(255,176,84,.35)}
+
+/* ===== 합의 SVG ===== */
+.svgbox{width:100%;height:auto;display:block}
+.node{transition:fill .7s}
+.nlabel{font-size:13px;fill:#bcd6f5;font-family:var(--mono)}
+.edge{stroke:#28517e;stroke-width:2;transition:stroke .5s}
+.edge.hot{stroke:var(--cyan);filter:drop-shadow(0 0 6px rgba(83,220,255,.8))}
+.pulse{fill:var(--cyan);filter:drop-shadow(0 0 8px rgba(83,220,255,.9))}
+
+/* ===== 실행 vs 합의 ===== */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.half{border-radius:var(--r-lg);padding:clamp(20px,3vw,30px);min-height:320px}
+.half h3{margin:0 0 6px;font-size:clamp(21px,2.4vw,27px);letter-spacing:-.02em}
+.half .sub{font-family:var(--mono);font-size:13px;letter-spacing:.1em;opacity:.7;margin-bottom:16px}
+.half ul{margin:14px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.half li{display:flex;gap:9px;font-size:16px;line-height:1.5}
+.half li::before{content:"—";opacity:.5}
+.half-exec{background:var(--card);color:var(--card-ink);border:1px solid #dfe8f7}
+.half-exec .bigf{font-family:var(--mono);font-size:clamp(22px,3vw,32px);font-weight:800;background:#0e1f3d;color:#7cf0bd;border-radius:var(--r-sm);padding:14px 18px;display:inline-block;margin:8px 0 4px}
+.half-exec li{color:#4a5f86}
+.half-cons{background:linear-gradient(150deg,#0e2246,#132c58);border:1px solid rgba(148,143,255,.35);color:#e6edff}
+.consdots{display:flex;gap:9px;margin:14px 0 6px}
+.consdots span{width:26px;height:26px;border-radius:50%;background:#7d8db0;transition:background 1s}
+.half-cons.sync .consdots span{background:var(--green);box-shadow:0 0 14px rgba(79,223,156,.6)}
+.half-cons li{color:#c6d4f5}
+.oneline{margin-top:22px;text-align:center;font-size:clamp(17px,2.2vw,22px);color:#eaf2ff;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px}
+.oneline b{color:var(--amber)}
+
+/* ===== 세 교시 레일 ===== */
+.rail3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;position:relative;margin-top:6px}
+.rail3::before{content:"";position:absolute;left:8%;right:8%;top:34px;height:3px;background:linear-gradient(90deg,#3a5d94,var(--cyan),#3a5d94);border-radius:99px}
+.stn{position:relative;padding:64px 14px 0;text-align:center}
+.stn::before{content:"";position:absolute;top:24px;left:50%;translate:-50% 0;width:22px;height:22px;border-radius:50%;background:var(--bg);border:4px solid #3a5d94}
+.stn.now::before{border-color:var(--cyan);box-shadow:0 0 18px rgba(83,220,255,.8)}
+.stn .t{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--ink-dim)}
+.stn h4{margin:6px 0 6px;font-size:clamp(17px,2vw,21px);letter-spacing:-.01em}
+.stn.now h4{color:var(--cyan)}
+.stn p{font-size:14.5px;color:var(--ink-dim);margin:0;line-height:1.55}
+.gethstrip{margin-top:40px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px}
+.gethstrip .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-dim);margin-bottom:12px}
+.gethrow{display:flex;gap:8px;flex-wrap:wrap}
+.gpart{flex:1 1 120px;text-align:center;border:1px dashed rgba(150,190,255,.3);border-radius:var(--r-sm);padding:11px 8px;font-size:13.5px;color:#cfe0ff}
+.gpart b{display:block;font-family:var(--mono);font-size:14px;margin-bottom:3px}
+.gpart.today{border-style:solid;border-color:var(--cyan);background:rgba(83,220,255,.1);color:#dff6ff}
+
+/* ===== 산출물 ===== */
+.outgrid{display:grid;grid-template-columns:minmax(220px,.8fr) 2fr;gap:20px;align-items:start}
+.timerbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;text-align:center}
+.timer{font-family:var(--mono);font-size:clamp(52px,6vw,76px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.timer.warn{color:var(--amber)} .timer.over{color:var(--red)}
+.flowform{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch}
+.fcell{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px}
+.fcell label{font-size:13px;font-weight:800;color:#3d5885;display:flex;align-items:center;gap:6px}
+.fcell label i{font-style:normal;font-family:var(--mono);font-size:11px;background:#e9f0fc;border-radius:5px;padding:2px 6px}
+.fcell textarea{border:1px solid #cdd9ee;border-radius:9px;padding:10px;font:inherit;font-size:14.5px;min-height:96px;resize:vertical;color:#15294b}
+.fcell textarea:focus{outline:2px solid var(--blue)}
+.farrow{align-self:center;font-size:26px;color:var(--cyan);font-family:var(--mono)}
+.fwide{grid-column:1/-1}
+.fwide textarea{min-height:64px}
+
+/* ===== 예측 퀴즈 ===== */
+.quiz{margin-top:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
+.quiz .q{font-size:15px;color:#dcebff;font-weight:700;margin-bottom:10px;display:flex;gap:9px;align-items:center}
+.quiz .q::before{content:"?";width:22px;height:22px;border-radius:50%;background:var(--amber);color:#4a3400;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:13px;flex:0 0 auto}
+.qopts{display:flex;gap:8px;flex-wrap:wrap}
+.qopt{background:rgba(255,255,255,.09);border:1px solid var(--line);color:#dcebff;font-weight:600;font-size:14px}
+.qopt.sel{border-color:var(--cyan);background:rgba(83,220,255,.16)}
+.qopt.right{border-color:var(--green);background:rgba(79,223,156,.22);color:#d7f7e6}
+.qopt.wrong{border-color:var(--red);background:rgba(255,109,136,.18);color:#ffdbe2;opacity:.85}
+
+/* ===== 샌드박스 ===== */
+.sandbox{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:18px}
+.sandbox .slbl{font-size:14px;font-weight:700;color:var(--cyan);letter-spacing:.06em}
+.sandbox input{width:92px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:#fff;padding:11px 12px;font:inherit;font-family:var(--mono);font-size:16px;font-weight:700;text-align:center}
+.sandbox input:focus{outline:2px solid var(--cyan)}
+.sandbox .hint{font-size:13.5px;color:var(--ink-dim)}
+
+/* ===== 매칭 게임 ===== */
+.match{margin-top:40px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:20px}
+.match .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-dim);margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mscore{margin-left:auto;font-size:13px;color:var(--cyan);letter-spacing:.05em}
+.mparts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mpart{font-family:var(--mono);font-weight:800;font-size:14px;background:rgba(255,255,255,.09);border:1px solid var(--line);color:#dff6ff;border-radius:999px;padding:10px 17px}
+.mpart.sel{border-color:var(--cyan);background:rgba(83,220,255,.2)}
+.mpart.lock{border-color:rgba(79,223,156,.6);background:rgba(79,223,156,.14);color:#c9f5df;opacity:.8;pointer-events:none}
+.mroles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.mrole{background:var(--card);color:#31507f;border:0;border-radius:var(--r-sm);padding:13px 14px;font-size:14px;font-weight:600;text-align:left;line-height:1.45}
+.mrole.lock{background:#def7ea;color:#116340;pointer-events:none}
+.mrole.no{animation:shake .45s;background:#ffe3e9;color:#8c2340}
+
+/* ===== 고정 UI ===== */
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));z-index:99}
+.nav{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:99}
+.nav button{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);color:#173b68;padding:0;font-size:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);background:#fff;color:#10213e;
+  padding:12px 20px;border-radius:11px;opacity:0;transition:.25s;z-index:120;font-weight:700;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:920px){
+  .board{grid-template-columns:1fr}
+  .track{min-height:90px}
+  .chip.go{left:calc(100% - 74px)}
+  .orderwrap{grid-template-columns:1fr}
+  .neq{justify-self:center;rotate:90deg;padding:4px 0}
+  .duo,.outgrid{grid-template-columns:1fr}
+  .rail3{grid-template-columns:1fr;gap:18px}
+  .rail3::before{left:24px;right:auto;top:0;bottom:0;width:3px;height:auto;background:linear-gradient(180deg,#3a5d94,var(--cyan),#3a5d94)}
+  .stn{text-align:left;padding:0 0 0 56px}
+  .stn::before{top:2px;left:14px;translate:0 0}
+  .flowform{grid-template-columns:1fr}
+  .farrow{rotate:90deg;justify-self:center}
+  .agenda{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="toast" id="toast"></div>
+
+<!-- 1 · 표지 + 진행표 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">W1</span> BAY 18기 온보딩 · 2교시 <span class="min">30 MIN</span></div>
+    <h1>블록체인은<br><em>상태를 바꾸는 기계</em>다</h1>
+    <p class="lead">계좌 잔액도, 토큰 보유량도 전부 하나의 <b>상태</b>입니다. 오늘은 트랜잭션이 그 상태를 어떻게 바꾸고, 왜 모든 노드가 같은 결과에 도달해야 하는지를 <b>움직이는 그림</b>으로 봅니다.</p>
+    <div class="formula"><span class="s0">State₀</span><span class="ar">+</span><span class="tx">TX</span><span class="ar">→</span><span class="s1">State₁</span></div>
+    <div class="agenda">
+      <div class="ag1"><b>2'</b>OT 연결</div>
+      <div class="ag2"><b>18'</b>상태 · 트랜잭션 · 순서 · 합의</div>
+      <div class="ag3"><b>7'</b>1·3교시 연결</div>
+      <div class="ag4"><b>3'</b>산출물</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · 활동 1: 상태판 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">활동 1</span> 상태판 — 트랜잭션 한 건의 일생 <span class="min">~7'</span></div>
+    <h2>트랜잭션은 <em>상태를 바꿔달라는 요청</em>이다</h2>
+    <div class="stage">
+      <div class="board">
+        <div class="acct">
+          <div class="who"><span class="ava ava-a">A</span>Alice</div>
+          <div class="balwrap"><div class="bal" id="barA" style="height:83%"></div></div>
+          <div class="balnum" id="numA">10</div>
+        </div>
+        <div class="track">
+          <div class="rail"></div>
+          <div class="chip" id="chip">TX<br>−3→</div>
+        </div>
+        <div class="acct">
+          <div class="who"><span class="ava ava-b">B</span>Bob</div>
+          <div class="balwrap"><div class="bal" id="barB" style="height:17%"></div></div>
+          <div class="balnum" id="numB">2</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="st1"><i>1</i>요청 생성</div>
+        <div class="step" id="st2"><i>2</i>규칙 검사</div>
+        <div class="step" id="st3"><i>3</i>상태 반영</div>
+      </div>
+      <div class="caption" id="txCap">버튼을 누르면 “Alice → Bob, 3” 요청이 상태판을 실제로 바꾸는 과정을 봅니다.</div>
+      <div class="btnrow">
+        <button onclick="playTx()">정상 전송</button>
+        <button class="btn-red" onclick="playBadTx()">잔액 부족 (13 전송)</button>
+        <button class="btn-ghost" onclick="resetTx()">초기화</button>
+      </div>
+      <div class="sandbox">
+        <span class="slbl">직접 실험</span>
+        <input id="amt" type="number" min="1" max="20" value="7" inputmode="numeric" aria-label="전송 금액">
+        <button onclick="sendCustom()">이 금액으로 전송</button>
+        <span class="hint">전 재산을 보내면? 잔액보다 크면? 여러 번 이어서 보내면? — 상태는 초기화 전까지 누적됩니다.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · 활동 2: 순서 분기 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">활동 2</span> 같은 규칙, 다른 순서 <span class="min">~6'</span></div>
+    <h2>순서가 다르면 <em>상태가 갈라진다</em></h2>
+    <p class="dim">초기 상태는 Alice 10 · Bob 2 · Carol 0. 두 노드가 같은 거래 두 건을 <b>다른 순서</b>로 실행하면?</p>
+    <div class="stage">
+      <div class="orderwrap">
+        <div class="nodeboard" id="bdA">
+          <header><b>노드 A</b><span class="orderseq">Tx1 → Tx2</span></header>
+          <div class="mini">
+            <div class="slot"><div class="nm">Alice</div><div class="mbarwrap"><div class="mbar" id="a_al" style="height:83%"></div></div><div class="mnum" id="a_al_n">10</div></div>
+            <div class="slot"><div class="nm">Bob</div><div class="mbarwrap"><div class="mbar" id="a_bo" style="height:17%"></div></div><div class="mnum" id="a_bo_n">2</div></div>
+            <div class="slot"><div class="nm">Carol</div><div class="mbarwrap"><div class="mbar" id="a_ca" style="height:0%"></div></div><div class="mnum" id="a_ca_n">0</div></div>
+          </div>
+          <div class="txtags">
+            <div class="txtag" id="a_t1"><span>Tx1 · Alice → Bob 7</span><span class="st"></span></div>
+            <div class="txtag" id="a_t2"><span>Tx2 · Alice → Carol 5</span><span class="st"></span></div>
+          </div>
+        </div>
+        <div class="neq" id="neq">≠</div>
+        <div class="nodeboard" id="bdB">
+          <header><b>노드 B</b><span class="orderseq">Tx2 → Tx1</span></header>
+          <div class="mini">
+            <div class="slot"><div class="nm">Alice</div><div class="mbarwrap"><div class="mbar" id="b_al" style="height:83%"></div></div><div class="mnum" id="b_al_n">10</div></div>
+            <div class="slot"><div class="nm">Bob</div><div class="mbarwrap"><div class="mbar" id="b_bo" style="height:17%"></div></div><div class="mnum" id="b_bo_n">2</div></div>
+            <div class="slot"><div class="nm">Carol</div><div class="mbarwrap"><div class="mbar" id="b_ca" style="height:0%"></div></div><div class="mnum" id="b_ca_n">0</div></div>
+          </div>
+          <div class="txtags">
+            <div class="txtag" id="b_t2"><span>Tx2 · Alice → Carol 5</span><span class="st"></span></div>
+            <div class="txtag" id="b_t1"><span>Tx1 · Alice → Bob 7</span><span class="st"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="quiz" id="qz1">
+        <div class="q">실행 전 예측 — 두 노드의 최종 상태는 어떻게 될까요? (손 들어 주세요)</div>
+        <div class="qopts">
+          <button class="qopt" onclick="qpick('qz1',0)">둘 다 같은 상태가 된다</button>
+          <button class="qopt" onclick="qpick('qz1',1)">서로 다른 상태가 된다</button>
+          <button class="qopt" onclick="qpick('qz1',2)">두 거래 모두 실패한다</button>
+        </div>
+      </div>
+      <div class="caption" id="ordCap">두 노드를 동시에 실행해서 결과를 비교해 보세요.</div>
+      <div class="btnrow">
+        <button onclick="runOrders()">두 노드 동시에 실행</button>
+        <button class="btn-ghost" onclick="resetOrders()">초기화</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · 활동 3: 합의 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">활동 3</span> 합의 — 상태판을 하나로 <span class="min">~5'</span></div>
+    <h2>그래서 노드들은 <em>순서와 상태를 맞춘다</em></h2>
+    <div class="stage">
+      <svg class="svgbox" viewBox="0 0 900 420" role="img" aria-label="일곱 노드가 하나의 전역 상태를 공유하는 그림">
+        <circle cx="450" cy="210" r="120" fill="none" stroke="#27496f" stroke-width="2" stroke-dasharray="6 7"/>
+        <text x="450" y="204" text-anchor="middle" fill="#d9ebff" font-size="26" font-weight="700">Global State</text>
+        <text x="450" y="232" text-anchor="middle" fill="#8fa8cc" font-size="15">하나의 상태판</text>
+        <g id="edges">
+          <line class="edge" x1="450" y1="78" x2="450" y2="180"/>
+          <line class="edge" x1="596" y1="132" x2="518" y2="184"/>
+          <line class="edge" x1="662" y1="252" x2="558" y2="222"/>
+          <line class="edge" x1="536" y1="342" x2="498" y2="248"/>
+          <line class="edge" x1="364" y1="342" x2="402" y2="248"/>
+          <line class="edge" x1="238" y1="252" x2="342" y2="222"/>
+          <line class="edge" x1="304" y1="132" x2="382" y2="184"/>
+        </g>
+        <g id="nodesG"></g>
+      </svg>
+      <div class="quiz" id="qz2">
+        <div class="q">실행 전 예측 — N1이 새 블록을 받으면 나머지 노드들은?</div>
+        <div class="qopts">
+          <button class="qopt" onclick="qpick('qz2',0)">전부 동시에 바뀐다</button>
+          <button class="qopt" onclick="qpick('qz2',1)">이웃부터 차례대로 퍼진다</button>
+          <button class="qopt" onclick="qpick('qz2',2)">절반만 받아들인다</button>
+        </div>
+      </div>
+      <div class="caption" id="conCap">회색 = 아직 상태가 제각각인 노드. 새 블록이 퍼지면 색이 하나로 맞춰집니다.</div>
+      <div class="btnrow">
+        <button onclick="playConsensus()">합의 퍼짐</button>
+        <button class="btn-ghost" onclick="splitConsensus()">분열되면?</button>
+        <button class="btn-ghost" onclick="resetConsensus()">초기화</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · 개념 정리 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">정리</span> 오늘의 딱 한 문장 <span class="min">~2'</span></div>
+    <h2>실행은 <em>계산</em>, 합의는 <em>동기화</em></h2>
+    <div class="duo">
+      <div class="half half-exec">
+        <h3>실행 Execution</h3>
+        <div class="sub">이 거래의 결과는 무엇인가</div>
+        <div class="bigf">S + tx = S′</div>
+        <ul>
+          <li>잔액이 충분한가?</li>
+          <li>새 상태 값은 무엇인가?</li>
+          <li>노드 한 대 안에서 일어나는 <b>계산</b></li>
+        </ul>
+      </div>
+      <div class="half half-cons" id="consHalf">
+        <h3>합의 Consensus</h3>
+        <div class="sub">어느 결과를 공식으로 인정하나</div>
+        <div class="consdots"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <ul>
+          <li>어떤 블록·어떤 순서를 채택할까?</li>
+          <li>노드 <b>사이</b>에서 일어나는 동기화</li>
+          <li>세부 방식(PoW·PoS)은 다음에</li>
+        </ul>
+        <div class="btnrow"><button class="btn-ghost" onclick="syncDots()">맞춰보기</button></div>
+      </div>
+    </div>
+    <div class="oneline">블록체인 = <b>같은 규칙</b>으로 계산하고 <b>같은 순서</b>로 맞추는, 모두의 상태 머신</div>
+  </div>
+</section>
+
+<!-- 6 · 세 교시 연결 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">연결</span> 오늘 세 교시가 만드는 그림 <span class="min">7'</span></div>
+    <h2>왜 → <em>무엇이 바뀌나</em> → 누가 공유하나</h2>
+    <div class="rail3">
+      <div class="stn">
+        <div class="t">1교시 · 리서치</div>
+        <h4>블록체인 개괄 1</h4>
+        <p>중앙 장부 대신 블록체인을 쓰는 <b>이유</b></p>
+      </div>
+      <div class="stn now">
+        <div class="t">2교시 · 지금</div>
+        <h4>상태 머신</h4>
+        <p>트랜잭션이 상태를 <b>어떻게 바꾸는가</b></p>
+      </div>
+      <div class="stn">
+        <div class="t">3교시 · 개발</div>
+        <h4>이더리움 네트워크 크게 보기</h4>
+        <p>노드들이 이 상태를 <b>어떻게 공유하는가</b></p>
+      </div>
+    </div>
+    <div class="match" id="match">
+      <div class="lbl">게임 · 부품 ↔ 역할 짝짓기 — 부품을 누른 뒤, 맞는 역할을 누르세요 <span class="mscore" id="mscore">0 / 5</span></div>
+      <div class="mparts" id="mparts"></div>
+      <div class="mroles" id="mroles"></div>
+      <div class="btnrow"><button class="btn-ghost" onclick="matchReset()">다시 섞기</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · 산출물 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">산출물</span> 나의 상태 머신 한 장 <span class="min">3'</span></div>
+    <h2>일상 사례 하나를 <em>화살표로</em> 정리하세요</h2>
+    <div class="outgrid">
+      <div class="timerbox">
+        <div class="timer" id="timer">03:00</div>
+        <div class="btnrow" style="justify-content:center">
+          <button onclick="startTimer()">시작</button>
+          <button class="btn-ghost" onclick="resetTimer()">리셋</button>
+        </div>
+        <p class="dim" style="font-size:14px;margin-top:14px">이 한 장이 6주차 종합 지도에 그대로 쌓입니다.</p>
+      </div>
+      <div class="flowform">
+        <div class="fcell"><label><i>S₀</i>현재 상태</label><textarea id="o1" placeholder="예: 내 포인트 10점"></textarea></div>
+        <div class="farrow">→</div>
+        <div class="fcell"><label><i>TX</i>트랜잭션</label><textarea id="o2" placeholder="예: 상품 구매 −3점"></textarea></div>
+        <div class="farrow">→</div>
+        <div class="fcell"><label><i>S₁</i>새 상태</label><textarea id="o3" placeholder="예: 포인트 7점"></textarea></div>
+        <div class="fcell fwide"><label><i>!</i>순서가 바뀌면 생길 문제</label><textarea id="o4" placeholder="예: 같은 잔액을 노리는 두 결제가 있으면 먼저 처리된 쪽에 따라 결과가 달라진다."></textarea></div>
+        <div class="fwide">
+          <div class="btnrow" style="margin-top:0">
+            <button onclick="submitForm()">구글폼으로 제출</button>
+            <button class="btn-ghost" onclick="copyOutput()">복사</button>
+            <button class="btn-ghost" onclick="downloadOutput()">TXT 백업</button>
+          </div>
+          <p class="dim" style="font-size:13.5px;margin-top:10px">작성 내용은 이 브라우저에 자동 저장되어, 조립 페이지에서 나만의 “트랜잭션 생애주기 지도”로 합쳐집니다. 제출된 답 중 몇 개는 다음 주 도입 2분에서 소개됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="nav"><button onclick="go(-1)" aria-label="이전 슬라이드">↑</button><button onclick="go(1)" aria-label="다음 슬라이드">↓</button></div>
+
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function toast(t){const x=$('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1600)}
+function cap(el,text,mode){el.textContent=text;el.className='caption'+(mode?' '+mode:'')}
+const MAX=12, H=v=>(v/MAX*100)+'%';
+function setBal(bar,num,v,dir){bar.style.height=H(v);num.textContent=v;num.className='balnum'+(dir?' '+dir:'')}
+
+/* ---- 활동 1 ---- */
+let txBusy=false;
+function stepsReset(){['st1','st2','st3'].forEach(i=>$(i).className='step')}
+function resetTx(){
+  txBusy=false; stepsReset();
+  $('chip').className='chip'; $('chip').innerHTML='TX<br>−3→';
+  setBal($('barA'),$('numA'),10); setBal($('barB'),$('numB'),2);
+  $('barB').classList.remove('grow');
+  cap($('txCap'),'버튼을 누르면 “Alice → Bob, 3” 요청이 상태판을 실제로 바꾸는 과정을 봅니다.');
+}
+async function playTx(){
+  if(txBusy)return; resetTx(); txBusy=true;
+  $('st1').className='step on';
+  cap($('txCap'),'① Alice가 “Bob에게 3 보내기” 요청서를 만든다.');
+  await wait(800); if(!txBusy)return;
+  $('st1').className='step done'; $('st2').className='step on';
+  $('chip').classList.add('mid');
+  cap($('txCap'),'② 규칙 검사 — 잔액 10 ≥ 3, 통과.');
+  await wait(1100); if(!txBusy)return;
+  $('st2').className='step done'; $('st3').className='step on';
+  $('chip').classList.remove('mid'); $('chip').classList.add('go');
+  await wait(1100); if(!txBusy)return;
+  setBal($('barA'),$('numA'),7,'down'); $('barB').classList.add('grow'); setBal($('barB'),$('numB'),5,'up');
+  $('st3').className='step done';
+  cap($('txCap'),'③ 상태 반영 — Alice 7 · Bob 5. 요청이 상태를 바꿨다. 이것이 트랜잭션이다.','ok');
+  txBusy=false;
+}
+async function playBadTx(){
+  if(txBusy)return; resetTx(); txBusy=true;
+  $('chip').innerHTML='TX<br>−13→';
+  $('st1').className='step on';
+  cap($('txCap'),'① Alice가 “Bob에게 13 보내기”를 요청한다.');
+  await wait(800); if(!txBusy)return;
+  $('st1').className='step done'; $('st2').className='step on';
+  $('chip').classList.add('mid');
+  await wait(900); if(!txBusy)return;
+  $('st2').className='step fail'; $('chip').classList.add('rejected');
+  cap($('txCap'),'② 규칙 검사 실패 — 잔액 10으로는 13을 보낼 수 없다. 상태판은 그대로다.','bad');
+  txBusy=false;
+}
+
+async function sendCustom(){
+  if(txBusy)return;
+  const amt=Math.floor(+$('amt').value);
+  if(!amt||amt<1){toast('1 이상의 정수를 입력하세요');return}
+  const a=+$('numA').textContent, b=+$('numB').textContent;
+  txBusy=true; stepsReset();
+  $('chip').className='chip'; $('chip').innerHTML=`TX<br>−${amt}→`;
+  $('st1').className='step on';
+  cap($('txCap'),`① Alice가 “Bob에게 ${amt} 보내기” 요청서를 만든다. (현재 Alice ${a})`);
+  await wait(700); if(!txBusy)return;
+  $('st1').className='step done'; $('st2').className='step on'; $('chip').classList.add('mid');
+  await wait(900); if(!txBusy)return;
+  if(amt>a){
+    $('st2').className='step fail'; $('chip').classList.add('rejected');
+    cap($('txCap'),`② 규칙 검사 실패 — 잔액 ${a}로는 ${amt}을 보낼 수 없다. 상태판은 그대로.`,'bad');
+    txBusy=false; return;
+  }
+  $('st2').className='step done'; $('st3').className='step on';
+  $('chip').classList.remove('mid'); $('chip').classList.add('go');
+  await wait(1000); if(!txBusy)return;
+  setBal($('barA'),$('numA'),a-amt,'down'); $('barB').classList.add('grow'); setBal($('barB'),$('numB'),b+amt,'up');
+  $('st3').className='step done';
+  cap($('txCap'),`③ 상태 반영 — Alice ${a-amt} · Bob ${b+amt}.`+(a-amt===0?' 전 재산이 이동했다. 0에서 또 보내면 어떻게 될까?':''),'ok');
+  txBusy=false;
+}
+
+/* ---- 활동 2 ---- */
+const mini={a_al:10,a_bo:2,a_ca:0,b_al:10,b_bo:2,b_ca:0};
+function setMini(key,v){mini[key]=v;$(key).style.height=H(v);$(key+'_n').textContent=v}
+function tagState(id,st){const el=$(id);el.className='txtag'+(st?' '+st:'');el.querySelector('.st').textContent=st==='ok'?'✓':st==='no'?'✕':st==='run'?'…':''}
+let ordBusy=false;
+function resetOrders(){
+  ordBusy=false;
+  ['a_al','b_al'].forEach(k=>setMini(k,10));
+  ['a_bo','b_bo'].forEach(k=>setMini(k,2));
+  ['a_ca','b_ca'].forEach(k=>setMini(k,0));
+  ['a_t1','a_t2','b_t1','b_t2'].forEach(t=>tagState(t,''));
+  $('bdA').className='nodeboard'; $('bdB').className='nodeboard'; $('neq').className='neq';
+  qreset('qz1');
+  cap($('ordCap'),'두 노드를 동시에 실행해서 결과를 비교해 보세요.');
+}
+async function runOrders(){
+  if(ordBusy)return; resetOrders(); ordBusy=true;
+  cap($('ordCap'),'노드 A는 Tx1부터, 노드 B는 Tx2부터 실행합니다…');
+  tagState('a_t1','run'); tagState('b_t2','run');
+  await wait(900); if(!ordBusy)return;
+  setMini('a_al',3); setMini('a_bo',9); tagState('a_t1','ok');     // A: Tx1 ok
+  setMini('b_al',5); setMini('b_ca',5); tagState('b_t2','ok');     // B: Tx2 ok
+  await wait(1100); if(!ordBusy)return;
+  tagState('a_t2','run'); tagState('b_t1','run');
+  await wait(900); if(!ordBusy)return;
+  tagState('a_t2','no');   // A: 잔액 3 < 5
+  tagState('b_t1','no');   // B: 잔액 5 < 7
+  await wait(700); if(!ordBusy)return;
+  $('bdA').classList.add('diverged-a'); $('bdB').classList.add('diverged-b'); $('neq').classList.add('hot');
+  qreveal('qz1',1);
+  cap($('ordCap'),'노드 A는 (3·9·0), 노드 B는 (5·2·5). 같은 규칙인데 상태가 갈라졌다 — 그래서 “같은 순서”가 필수다.','bad');
+  ordBusy=false;
+}
+
+/* ---- 활동 3 ---- */
+const NPOS=[[450,52],[622,114],[690,254],[558,368],[342,368],[210,254],[278,114]];
+const nodesG=$('nodesG');
+NPOS.forEach((p,i)=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.innerHTML=`<circle class="node" id="cn${i}" cx="${p[0]}" cy="${p[1]}" r="25" fill="#7d8db0"/>
+  <text class="nlabel" x="${p[0]}" y="${p[1]+44}" text-anchor="middle">N${i+1}</text>`;
+  nodesG.appendChild(g);
+});
+const cn=i=>$('cn'+i);
+const edges=[...document.querySelectorAll('.edge')];
+let conBusy=false;
+function resetConsensus(){
+  conBusy=false;
+  for(let i=0;i<7;i++)cn(i).setAttribute('fill','#7d8db0');
+  edges.forEach(e=>e.classList.remove('hot'));
+  qreset('qz2');
+  cap($('conCap'),'회색 = 아직 상태가 제각각인 노드. 새 블록이 퍼지면 색이 하나로 맞춰집니다.');
+}
+async function playConsensus(){
+  if(conBusy)return; resetConsensus(); conBusy=true;
+  cap($('conCap'),'N1이 새 블록을 받았습니다. 이웃에게 퍼뜨립니다…');
+  const order=[0,1,6,2,5,3,4];
+  for(let k=0;k<order.length;k++){
+    if(!conBusy)return;
+    edges[order[k]]?.classList.add('hot');
+    cn(order[k]).setAttribute('fill','#4fdf9c');
+    await wait(380);
+  }
+  edges.forEach(e=>e.classList.remove('hot'));
+  qreveal('qz2',1);
+  cap($('conCap'),'일곱 노드가 모두 같은 초록 상태 — 하나의 상태판을 공유한다. 이것이 합의의 목표다.','ok');
+  conBusy=false;
+}
+async function splitConsensus(){
+  if(conBusy)return; resetConsensus(); conBusy=true;
+  const colors=['#4b8cff','#4b8cff','#ff6d88','#ff6d88','#4fdf9c','#4fdf9c','#4b8cff'];
+  for(let i=0;i<7;i++){if(!conBusy)return; cn(i).setAttribute('fill',colors[i]); await wait(200)}
+  cap($('conCap'),'색이 세 갈래 — 노드마다 다른 상태를 “진짜”라고 믿는 중. 사용자는 어느 잔액이 맞는지 알 수 없다.','bad');
+  conBusy=false;
+}
+
+/* ---- 개념 ---- */
+function syncDots(){const h=$('consHalf');h.classList.remove('sync');void h.offsetWidth;h.classList.add('sync')}
+
+/* ---- 타이머 & 산출물 ---- */
+let tId=null,remain=180;
+function drawT(){
+  const t=$('timer');
+  t.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
+  t.className='timer'+(remain<=0?' over':remain<=30?' warn':'');
+}
+function startTimer(){if(tId)return;tId=setInterval(()=>{remain--;drawT();if(remain<=0){clearInterval(tId);tId=null;toast('3분 종료! 저장 버튼을 눌러 주세요.')}},1000)}
+function resetTimer(){clearInterval(tId);tId=null;remain=180;drawT()}
+const WEEK=1, LSKEY='bay18.w'+WEEK;
+function buildOutput(){
+  return `[BAY18-W1] 상태 머신\nS0 현재 상태: ${$('o1').value}\nTX 트랜잭션: ${$('o2').value}\nS1 새 상태: ${$('o3').value}\n순서 문제: ${$('o4').value}`;
+}
+function saveLocal(){
+  try{localStorage.setItem(LSKEY,JSON.stringify({
+    f:{o1:$('o1').value,o2:$('o2').value,o3:$('o3').value,o4:$('o4').value},
+    text:buildOutput(),ts:Date.now()
+  }))}catch(e){}
+}
+function restoreLocal(){
+  try{const d=JSON.parse(localStorage.getItem(LSKEY)||'null');
+    if(d&&d.f)['o1','o2','o3','o4'].forEach(k=>{if(d.f[k])$(k).value=d.f[k]});
+  }catch(e){}
+}
+function doCopy(text){
+  return navigator.clipboard.writeText(text).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);
+    ta.select();document.execCommand('copy');ta.remove();
+  });
+}
+async function copyOutput(){
+  saveLocal(); await doCopy(buildOutput());
+  toast('복사 완료! 제출 채널에 붙여넣어 주세요.');
+}
+async function submitForm(){
+  saveLocal();
+  const c=window.BAY18_CONFIG||{};
+  if(!c.formAction||!c.fields||!c.fields.output){
+    await doCopy(buildOutput());
+    toast('구글폼 설정 전이라 대신 복사했습니다. 채널에 붙여넣어 주세요.');
+    return;
+  }
+  const p=new URLSearchParams({usp:'pp_url'});
+  const name=localStorage.getItem('bay18.name')||'';
+  const member=localStorage.getItem('bay18.member')||'';
+  if(c.fields.week)p.set(c.fields.week,'W'+WEEK);
+  if(c.fields.term&&c.term)p.set(c.fields.term,c.term);
+  if(c.fields.member&&member)p.set(c.fields.member,member);
+  if(c.fields.name&&name)p.set(c.fields.name,name);
+  p.set(c.fields.output,buildOutput());
+  window.open(c.formAction+'?'+p.toString(),'_blank');
+  toast('구글폼이 열렸습니다. 확인 후 제출을 눌러 주세요.');
+}
+function downloadOutput(){
+  saveLocal();
+  const blob=new Blob([buildOutput()+'\n'],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='BAY_1주차_산출물.txt';a.click();URL.revokeObjectURL(url);
+  toast('저장했습니다.');
+}
+['o1','o2','o3','o4'].forEach(k=>$(k).addEventListener('input',saveLocal));
+
+/* ---- 예측 퀴즈 ---- */
+const qzSel={};
+function qpick(id,i){
+  const el=$(id); if(el.dataset.done)return;
+  qzSel[id]=i;
+  [...el.querySelectorAll('.qopt')].forEach((b,k)=>b.className='qopt'+(k===i?' sel':''));
+}
+function qreveal(id,ans){
+  const el=$(id); if(el.dataset.done)return; el.dataset.done='1';
+  [...el.querySelectorAll('.qopt')].forEach((b,k)=>{
+    if(k===ans)b.className='qopt right';
+    else if(qzSel[id]===k)b.className='qopt wrong';
+    else b.className='qopt';
+  });
+}
+function qreset(id){
+  const el=$(id); delete el.dataset.done; delete qzSel[id];
+  [...el.querySelectorAll('.qopt')].forEach(b=>b.className='qopt');
+}
+
+/* ---- 매칭 게임 ---- */
+const PARTS=[
+  ['RPC','지갑의 요청을 받는 창구'],
+  ['txpool','블록에 들어가길 기다리는 거래 대기실'],
+  ['EVM','트랜잭션을 실행해 상태를 바꾸는 계산기'],
+  ['StateDB','오늘 본 “상태판”이 저장되는 곳'],
+  ['합의','노드들이 블록과 순서를 맞추는 장치'],
+];
+let mSel=null,mDone=0;
+function matchReset(){
+  mSel=null; mDone=0; $('mscore').textContent='0 / 5';
+  $('mparts').innerHTML=PARTS.map((p,i)=>`<button class="mpart" data-i="${i}" onclick="mPick(this)">${p[0]}</button>`).join('');
+  const sh=PARTS.map((_,i)=>i).sort(()=>Math.random()-.5);
+  $('mroles').innerHTML=sh.map(i=>`<button class="mrole" data-i="${i}" onclick="mTry(this)">${PARTS[i][1]}</button>`).join('');
+}
+function mPick(b){
+  if(b.classList.contains('lock'))return;
+  document.querySelectorAll('.mpart').forEach(x=>x.classList.remove('sel'));
+  b.classList.add('sel'); mSel=b;
+}
+function mTry(r){
+  if(!mSel){toast('부품을 먼저 선택하세요');return}
+  if(r.classList.contains('lock'))return;
+  if(r.dataset.i===mSel.dataset.i){
+    r.classList.add('lock'); mSel.classList.add('lock'); mSel.classList.remove('sel'); mSel=null;
+    mDone++; $('mscore').textContent=mDone+' / 5';
+    if(mDone===5)toast('완료! 3교시에서 이 부품들의 실제 위치를 봅니다.');
+  }else{
+    r.classList.add('no'); setTimeout(()=>r.classList.remove('no'),470);
+  }
+}
+
+/* ---- 네비게이션 ---- */
+const secs=[...document.querySelectorAll('section')];
+function cur(){let bi=0,bd=1e9;secs.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<bd){bd=d;bi=i}});return bi}
+function go(d){secs[Math.max(0,Math.min(secs.length-1,cur()+d))].scrollIntoView({behavior:'smooth'})}
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(['ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();go(1)}
+  if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
+});
+addEventListener('scroll',()=>{$('progress').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'});
+drawT(); resetTx(); resetOrders(); resetConsensus(); matchReset(); restoreLocal();
+</script>
+</body>
+</html>
