@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BAY 18기 · 5주차 — 거래는 언제 포함되고, 언제 확정되는가</title>
+<style>
+/* ===== 시리즈 공통 토큰 ===== */
+:root{
+  --bg:#060f22; --bg-soft:#0b1a35; --panel:rgba(255,255,255,.05); --line:rgba(150,190,255,.16);
+  --ink:#eef5ff; --ink-dim:#9fb4d6; --card:#f7faff; --card-ink:#15294b; --card-dim:#5a6f95;
+  --blue:#4b8cff; --cyan:#53dcff; --green:#4fdf9c; --red:#ff6d88; --amber:#ffd166; --purple:#948fff;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","D2Coding",Consolas,monospace;
+  --r-lg:26px; --r-md:16px; --r-sm:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  -webkit-font-smoothing:antialiased}
+section{min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;
+  padding:clamp(40px,6vh,70px) clamp(18px,6vw,80px);position:relative;overflow:hidden}
+section::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5}
+section:nth-child(1)::before{background:radial-gradient(60vw 60vh at 80% 15%,rgba(255,209,102,.13),transparent 60%)}
+section:nth-child(2)::before{background:radial-gradient(55vw 55vh at 12% 20%,rgba(83,220,255,.13),transparent 60%)}
+section:nth-child(3)::before{background:radial-gradient(60vw 60vh at 85% 82%,rgba(255,109,136,.12),transparent 60%)}
+section:nth-child(4)::before{background:radial-gradient(55vw 55vh at 12% 82%,rgba(148,143,255,.14),transparent 60%)}
+section:nth-child(5)::before{background:radial-gradient(50vw 60vh at 50% 0%,rgba(79,223,156,.10),transparent 60%)}
+section:nth-child(6)::before{background:radial-gradient(55vw 55vh at 15% 20%,rgba(83,220,255,.12),transparent 60%)}
+section:nth-child(7)::before{background:radial-gradient(55vw 55vh at 80% 25%,rgba(75,140,255,.16),transparent 60%)}
+.wrap{width:min(1200px,100%);position:relative;z-index:1}
+
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;letter-spacing:.12em;color:var(--cyan)}
+.eyebrow .wk{font-family:var(--mono);background:rgba(83,220,255,.12);border:1px solid rgba(83,220,255,.35);
+  border-radius:999px;padding:4px 12px;font-weight:700;letter-spacing:.05em}
+.eyebrow .min{margin-left:auto;font-family:var(--mono);color:var(--ink-dim);letter-spacing:0;font-size:12px}
+h1{font-size:clamp(36px,6vw,72px);line-height:1.06;margin:0 0 20px;letter-spacing:-.035em;font-weight:800}
+h2{font-size:clamp(28px,4.3vw,50px);line-height:1.1;margin:0 0 22px;letter-spacing:-.03em;font-weight:800}
+h1 em,h2 em{font-style:normal;color:var(--cyan)}
+p{font-size:18px;line-height:1.7;color:#dfeaff;margin:.4em 0}
+.lead{font-size:clamp(20px,2.6vw,26px);max-width:920px;color:#eaf2ff}
+.dim{color:var(--ink-dim)}
+.mono{font-family:var(--mono)}
+
+button{border:0;border-radius:12px;background:#2d66c8;color:#fff;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .12s,filter .15s}
+button:hover{filter:brightness(1.12)} button:active{transform:scale(.97)}
+button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.btn-ghost{background:rgba(255,255,255,.1);color:#dcebff;border:1px solid var(--line)}
+.btn-red{background:#b13b52}
+.btn-amber{background:#a97f2e}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(18px,3vw,30px)}
+.caption{margin-top:16px;display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.55;color:#cfe0ff;min-height:44px}
+.caption::before{content:"▸";color:var(--cyan);flex:0 0 auto;translate:0 1px}
+.caption.ok{color:#c9f5df}.caption.ok::before{content:"✓";color:var(--green)}
+.caption.bad{color:#ffd4dd}.caption.bad::before{content:"✕";color:var(--red)}
+.caption.warn{color:#ffedc2}.caption.warn::before{content:"⏸";color:var(--amber)}
+.keynote{font-size:13.5px;color:var(--ink-dim);line-height:1.6;margin:14px 0 0}
+.keynote b{color:#cfe0ff}
+@keyframes shake{0%,100%{margin-left:0}20%{margin-left:-7px}40%{margin-left:5px}60%{margin-left:-4px}80%{margin-left:2px}}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ===== 퀴즈 ===== */
+.quiz{margin-top:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
+.quiz .q{font-size:15px;color:#dcebff;font-weight:700;margin-bottom:10px;display:flex;gap:9px;align-items:center}
+.quiz .q::before{content:"?";width:22px;height:22px;border-radius:50%;background:var(--amber);color:#4a3400;display:grid;place-items:center;font-family:var(--mono);font-weight:800;font-size:13px;flex:0 0 auto}
+.qopts{display:flex;gap:8px;flex-wrap:wrap}
+.qopt{background:rgba(255,255,255,.09);border:1px solid var(--line);color:#dcebff;font-weight:600;font-size:14px}
+.qopt.sel{border-color:var(--cyan);background:rgba(83,220,255,.16)}
+.qopt.right{border-color:var(--green);background:rgba(79,223,156,.22);color:#d7f7e6}
+.qopt.wrong{border-color:var(--red);background:rgba(255,109,136,.18);color:#ffdbe2;opacity:.85}
+
+/* ===== HERO ===== */
+.lastweek{display:inline-flex;align-items:center;gap:12px;margin:4px 0 22px;padding:11px 16px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:14px;color:var(--ink-dim)}
+.lastweek b{font-family:var(--mono);color:#cfe0ff}
+.formula{display:inline-flex;align-items:center;gap:12px;margin:8px 0;padding:16px 22px;border-radius:var(--r-md);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-family:var(--mono);font-size:clamp(15px,2.2vw,22px);font-weight:700;flex-wrap:wrap}
+.formula .st{color:var(--ink-dim)} .formula .ar{color:var(--cyan)}
+.formula .hot{color:var(--amber);animation:pulse 2.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.agenda{display:grid;grid-template-columns:2fr 18fr 7fr 3fr;gap:6px;margin-top:34px;max-width:760px}
+.agenda>div{border-radius:var(--r-sm);padding:10px 12px;font-size:13px;line-height:1.4;border:1px solid var(--line)}
+.agenda b{display:block;font-family:var(--mono);font-size:15px}
+.ag1{background:rgba(159,180,214,.10)} .ag2{background:rgba(75,140,255,.16)}
+.ag3{background:rgba(148,143,255,.15)} .ag4{background:rgba(79,223,156,.14)}
+
+/* ===== 활동1 · 세 단계 신호등 ===== */
+.lifegrid{display:grid;grid-template-columns:1fr minmax(200px,.55fr);gap:16px;align-items:stretch}
+.lifesteps{display:flex;flex-direction:column;gap:10px}
+.lstep{display:flex;gap:12px;align-items:center;background:var(--card);color:var(--card-ink);border-radius:var(--r-md);
+  padding:14px 16px;opacity:.45;transition:.4s;outline:2px solid transparent}
+.lstep .ic{font-size:26px}
+.lstep b{display:block;font-size:15.5px}
+.lstep .ds{font-size:13px;color:#5a6f95;line-height:1.45}
+.lstep.on{opacity:1;outline-color:var(--cyan)}
+.lstep.done{opacity:1;outline-color:var(--green);background:#f0fbf5}
+.mmbox{background:linear-gradient(160deg,#0e2246,#132c58);border:1px solid rgba(148,143,255,.4);border-radius:var(--r-md);
+  padding:16px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center}
+.mmbox .t{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:#c9d6f5}
+.mmstat{font-size:15px;font-weight:800;min-height:24px;color:#ffedc2}
+.mmstat.ok{color:#b9f2d6}
+.confbig{font-family:var(--mono);font-size:44px;font-weight:800;color:var(--cyan)}
+.conflbl{font-size:12px;color:var(--ink-dim);font-family:var(--mono)}
+
+/* ===== 활동2 · reorg 실험실 ===== */
+.lab{position:relative}
+.lane{display:flex;gap:8px;align-items:center;min-height:76px;flex-wrap:wrap}
+.lane.altlane{margin-top:10px;padding-left:0;opacity:.95}
+.lanetag{font-family:var(--mono);font-size:11px;color:var(--ink-dim);width:64px;flex:0 0 auto}
+.blk{width:74px;height:60px;border-radius:12px;background:var(--card);color:var(--card-ink);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-family:var(--mono);font-weight:800;font-size:13px;
+  box-shadow:0 10px 26px rgba(0,0,0,.35);animation:pop .4s;position:relative;transition:.45s}
+.blk small{font-size:10px;font-weight:600;color:#8a9cbd}
+.blk.mine{outline:3px solid var(--green)}
+.blk.mine::after{content:"★ 내 거래";position:absolute;bottom:-20px;font-size:10.5px;color:var(--green);white-space:nowrap}
+.blk.orphan{opacity:.32;outline-color:transparent;filter:grayscale(1);text-decoration:line-through}
+.blk.orphan::after{content:"고아"; position:absolute;bottom:-20px;font-size:10.5px;color:var(--red);text-decoration:none}
+.blk.alt{background:#fdeed3}
+.blk.locked{background:#0e1f3d;color:#c9f5df}
+.blk.locked small{color:#6f86ad}
+.blk.locked::before{content:"🔒";position:absolute;top:-13px;right:-7px;font-size:15px}
+.blk.denyfx{animation:shake .5s}
+.pooldock{margin-top:26px;border:1px dashed rgba(255,209,102,.45);border-radius:var(--r-md);padding:12px 14px;display:flex;gap:12px;align-items:center;min-height:58px}
+.pooldock .pt{font-family:var(--mono);font-size:12px;color:var(--amber);flex:0 0 auto}
+.txchip{background:#fffdf6;color:#2c3550;border-radius:99px;padding:8px 14px;font-family:var(--mono);font-weight:800;font-size:12.5px;
+  box-shadow:0 8px 22px rgba(0,0,0,.35);opacity:0;transform:scale(.5);transition:.45s}
+.txchip.show{opacity:1;transform:none}
+
+/* ===== 활동3 · 두 개의 시계 ===== */
+.clocks{display:flex;flex-direction:column;gap:14px}
+.clock{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:16px}
+.clock h4{margin:0 0 10px;font-size:15px;display:flex;gap:8px;align-items:center}
+.clock .scalelbl{font-family:var(--mono);font-size:11px;color:#8a9cbd;margin-left:auto}
+.cbarwrap{height:16px;background:#e6edf9;border-radius:99px;overflow:hidden;position:relative}
+.cbar{height:100%;width:0;border-radius:99px;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+.cbar.on{background:linear-gradient(90deg,#53dcff,#4fdf9c)}
+.cbar.off{background:linear-gradient(90deg,#ffd166,#ff9d5c)}
+.mile{display:flex;justify-content:space-between;margin-top:9px;font-family:var(--mono);font-size:11.5px;color:#8a9cbd}
+.mile span{transition:.3s}
+.mile span.hit{color:#116340;font-weight:800}
+.clockmsg{font-size:13.5px;color:#5a6f95;margin-top:9px;min-height:20px;line-height:1.5}
+
+/* ===== 정리 ===== */
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.key{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:22px 18px;text-align:center}
+.key .ic{font-size:34px;margin-bottom:10px}
+.key b{display:block;font-size:18px;margin-bottom:6px}
+.key .en{font-family:var(--mono);font-size:12px;color:#8a9cbd;letter-spacing:.1em;margin-bottom:8px}
+.key p{font-size:14.5px;color:#4a5f86;margin:0;line-height:1.55}
+.oneline{margin-top:22px;text-align:center;font-size:clamp(17px,2.2vw,22px);color:#eaf2ff;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px}
+.oneline b{color:var(--amber)}
+
+/* ===== 판단 게임 ===== */
+.judge{margin-top:36px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:20px}
+.judge .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-dim);margin-bottom:14px;display:flex;gap:10px}
+.jscore{margin-left:auto;color:var(--cyan)}
+.jitem{background:var(--card);color:var(--card-ink);border-radius:var(--r-sm);padding:13px 14px;margin-bottom:9px}
+.jq{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.jq .txt{font-size:14.5px;font-weight:600;color:#31507f;flex:1 1 260px;line-height:1.5}
+.jbtns{display:flex;gap:6px}
+.jbtns button{padding:9px 13px;background:#eef3fc;color:#31507f;border:1px solid #d7e2f5;font-size:13px;font-weight:800}
+.jbtns button.right{background:#def7ea;color:#116340;border-color:#8fe0b8}
+.jbtns button.wrong{background:#ffe3e9;color:#8c2340;border-color:#f5a3b4}
+.jexp{font-size:13px;color:#5a6f95;margin-top:8px;display:none;line-height:1.55}
+.jexp.show{display:block}
+
+/* ===== 세 교시 레일 ===== */
+.rail3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;position:relative;margin-top:6px}
+.rail3::before{content:"";position:absolute;left:8%;right:8%;top:34px;height:3px;background:linear-gradient(90deg,#3a5d94,var(--cyan),#3a5d94);border-radius:99px}
+.stn{position:relative;padding:64px 14px 0;text-align:center}
+.stn::before{content:"";position:absolute;top:24px;left:50%;translate:-50% 0;width:22px;height:22px;border-radius:50%;background:var(--bg);border:4px solid #3a5d94}
+.stn.now::before{border-color:var(--cyan);box-shadow:0 0 18px rgba(83,220,255,.8)}
+.stn .t{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--ink-dim)}
+.stn h4{margin:6px 0 6px;font-size:clamp(17px,2vw,21px);letter-spacing:-.01em}
+.stn.now h4{color:var(--cyan)}
+.stn p{font-size:14.5px;color:var(--ink-dim);margin:0;line-height:1.55}
+
+/* ===== 산출물 ===== */
+.outgrid{display:grid;grid-template-columns:minmax(220px,.8fr) 2fr;gap:20px;align-items:start}
+.timerbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;text-align:center}
+.timer{font-family:var(--mono);font-size:clamp(52px,6vw,76px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.timer.warn{color:var(--amber)} .timer.over{color:var(--red)}
+.flowform{display:grid;grid-template-columns:1fr;gap:10px}
+.fcell{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px}
+.fcell label{font-size:13px;font-weight:800;color:#3d5885;display:flex;align-items:center;gap:6px}
+.fcell label i{font-style:normal;font-family:var(--mono);font-size:11px;background:#e9f0fc;border-radius:5px;padding:2px 6px}
+.fcell textarea{border:1px solid #cdd9ee;border-radius:9px;padding:10px;font:inherit;font-size:14.5px;min-height:76px;resize:vertical;color:#15294b}
+.fcell textarea:focus{outline:2px solid var(--blue)}
+
+/* ===== 고정 UI ===== */
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));z-index:99}
+.nav{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:99}
+.nav button{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);color:#173b68;padding:0;font-size:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);background:#fff;color:#10213e;
+  padding:12px 20px;border-radius:11px;opacity:0;transition:.25s;z-index:120;font-weight:700;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:920px){
+  .lifegrid,.outgrid{grid-template-columns:1fr}
+  .keys{grid-template-columns:1fr}
+  .blk{width:62px;height:54px}
+  .rail3{grid-template-columns:1fr;gap:18px}
+  .rail3::before{left:24px;right:auto;top:0;bottom:0;width:3px;height:auto;background:linear-gradient(180deg,#3a5d94,var(--cyan),#3a5d94)}
+  .stn{text-align:left;padding:0 0 0 56px}
+  .stn::before{top:2px;left:14px;translate:0 0}
+  .agenda{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="toast" id="toast"></div>
+
+<!-- 1 · 표지 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">W5</span> BAY 18기 온보딩 · 2교시 <span class="min">30 MIN</span></div>
+    <div class="lastweek">지난주 — 메타마스크에 <b>✓ 완료</b>가 떴다 · 그런데, 그게 정말 끝일까?</div>
+    <h1>✓는 “실렸다”,<br><em>🔒는 “확정됐다”</em></h1>
+    <p class="lead">거래에는 세 개의 순간이 있습니다 — <b>실행됨</b>, <b>블록에 포함됨</b>, 그리고 <b>Finality</b>. 포함된 거래도 잠시 되돌아갈 수 있다는 것(reorg), 그리고 언제부터 절대 못 돌아가는지를 눈으로 봅니다.</p>
+    <div class="formula">
+      <span class="st">실행됨</span><span class="ar">→</span><span class="st">포함됨</span><span class="ar">→</span><span class="hot">Finality 🔒</span>
+    </div>
+    <div class="agenda">
+      <div class="ag1"><b>2'</b>4주차 연결</div>
+      <div class="ag2"><b>18'</b>세 단계 · reorg · 두 개의 시계</div>
+      <div class="ag3"><b>7'</b>1·3교시 연결</div>
+      <div class="ag4"><b>3'</b>산출물</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · 활동1: 세 단계 신호등 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">활동 1</span> 내 거래의 세 단계 <span class="min">~5'</span></div>
+    <h2>✓가 떠도 <em>아직 한 단계</em> 남았다</h2>
+    <div class="stage">
+      <div class="lifegrid">
+        <div class="lifesteps">
+          <div class="lstep" id="ls0"><span class="ic">🧺</span><div><b>1 · 대기 — txpool</b><div class="ds">검증 통과, 블록에 뽑히길 기다리는 중 (2주차)</div></div></div>
+          <div class="lstep" id="ls1"><span class="ic">📦</span><div><b>2 · 포함 — inclusion</b><div class="ds">블록에 실림 · receipt 발행 · 메타마스크 ✓ (4주차)</div></div></div>
+          <div class="lstep" id="ls2"><span class="ic">🔒</span><div><b>3 · 확정 — finality</b><div class="ds">합의가 자물쇠를 채움 · 이제 절대 되돌아가지 않음</div></div></div>
+        </div>
+        <div class="mmbox">
+          <div class="t">🦊 METAMASK</div>
+          <div class="mmstat" id="mmS">—</div>
+          <div class="confbig" id="confN">0</div>
+          <div class="conflbl">내 블록 위에 쌓인 블록 수</div>
+        </div>
+      </div>
+      <div class="quiz" id="qz1">
+        <div class="q">예측 — 메타마스크의 ✓ 완료 표시는 “이제 절대 되돌릴 수 없다”는 뜻일까요?</div>
+        <div class="qopts">
+          <button class="qopt" onclick="qpick('qz1',0)">그렇다, 완료는 완료다</button>
+          <button class="qopt" onclick="qpick('qz1',1)">아니다, 아직 되돌아갈 수 있는 단계다</button>
+          <button class="qopt" onclick="qpick('qz1',2)">✓는 실패했다는 뜻이다</button>
+        </div>
+      </div>
+      <div class="caption" id="lCap">재생을 누르면 거래 하나가 세 단계를 통과하는 시간을 봅니다.</div>
+      <div class="btnrow">
+        <button onclick="playLife()">내 거래의 일생 재생</button>
+        <button class="btn-ghost" onclick="resetLife()">초기화</button>
+      </div>
+      <p class="keynote">이더리움 기준, 포함은 <b>몇 초~몇 분</b>, finality는 대략 <b>13분(2 에포크)</b> 뒤 체크포인트가 확정되며 옵니다. ✓와 🔒 사이의 이 틈이 오늘의 주인공입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · 활동2: reorg 실험실 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">활동 2</span> reorg 실험실 <span class="min">~6'</span></div>
+    <h2>포함된 거래도 <em>잠시 되돌아갈 수 있다</em></h2>
+    <div class="stage">
+      <div class="lab">
+        <div class="lane" id="mainLane"><span class="lanetag">채택 체인</span></div>
+        <div class="lane altlane" id="altLane"><span class="lanetag">경쟁 가지</span></div>
+        <div class="pooldock">
+          <span class="pt">🧺 txpool</span>
+          <span class="txchip" id="ejChip">★ 내 거래</span>
+          <span class="dim" style="font-size:13px" id="poolNote">— 비어 있음</span>
+        </div>
+      </div>
+      <div class="caption" id="rCap">①부터 순서대로 실험해 보세요.</div>
+      <div class="btnrow">
+        <button onclick="playGrow()">① 체인 성장 + 내 거래 포함</button>
+        <button class="btn-red" onclick="playReorg()">② reorg 발생시키기</button>
+        <button class="btn-amber" onclick="playFinal()">③ Finality 자물쇠 채우기</button>
+        <button class="btn-ghost" onclick="resetLab()">초기화</button>
+      </div>
+      <p class="keynote">reorg에서 내 거래는 <b>사라지는 게 아니라</b> txpool로 되돌아갔다가 대개 다음 블록에 다시 실립니다. 하지만 그 사이 세상이 바뀌었다면(가격, 잔액) 결과가 달라질 수도 — 그래서 “포함 = 확정”이 아닙니다. 🔒 뒤의 블록은 어떤 경쟁 가지로도 교체되지 않습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · 활동3: 두 개의 시계 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">활동 3</span> 두 개의 시계 <span class="min">~4'</span></div>
+    <h2>온체인이 확정돼도 <em>세상의 장부는 따로 돈다</em></h2>
+    <div class="stage">
+      <p class="dim" style="margin-top:0">시나리오 — 토큰 증권(STO) 1억 원어치를 매수했습니다. 두 개의 시계가 동시에 돌기 시작합니다.</p>
+      <div class="clocks">
+        <div class="clock">
+          <h4>⛓️ 온체인 시계 <span class="scalelbl">초 ~ 분</span></h4>
+          <div class="cbarwrap"><div class="cbar on" id="cbOn"></div></div>
+          <div class="mile"><span id="m0">거래 전송</span><span id="m1">블록 포함 ✓</span><span id="m2">finalized 🔒 (~13분)</span></div>
+          <div class="clockmsg" id="onMsg">—</div>
+        </div>
+        <div class="clock">
+          <h4>🏦 오프체인 장부 시계 <span class="scalelbl">시간 ~ 일</span></h4>
+          <div class="cbarwrap"><div class="cbar off" id="cbOff"></div></div>
+          <div class="mile"><span id="n0">매수 접수</span><span id="n1">명의개서·정산 처리</span><span id="n2">법적 장부 확정 (D+1~)</span></div>
+          <div class="clockmsg" id="offMsg">—</div>
+        </div>
+      </div>
+      <div class="quiz" id="qz2">
+        <div class="q">예측 — 온체인이 finalized 🔒 되는 순간, 법적 소유권도 그 순간 확정될까요?</div>
+        <div class="qopts">
+          <button class="qopt" onclick="qpick('qz2',0)">그렇다, 체인이 곧 법이다</button>
+          <button class="qopt" onclick="qpick('qz2',1)">아니다, 법·운영 장부는 별도의 시계로 확정된다</button>
+          <button class="qopt" onclick="qpick('qz2',2)">스테이블코인일 때만 그렇다</button>
+        </div>
+      </div>
+      <div class="caption" id="cCap">재생을 눌러 두 시계의 속도 차이를 확인해 보세요.</div>
+      <div class="btnrow">
+        <button onclick="playClocks()">토큰 증권 매매 재생</button>
+        <button class="btn-ghost" onclick="resetClocks()">초기화</button>
+      </div>
+      <p class="keynote">1교시의 RWA·STO·스테이블코인이 전부 이 문제를 안고 삽니다 — <b>체인의 확정</b>과 <b>법·은행·운영 장부의 확정</b>은 다른 사건이고, 그 틈을 어떻게 메우느냐가 이 산업의 설계 과제입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · 정리 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">정리</span> 오늘의 딱 한 문장 <span class="min">~2'</span></div>
+    <h2>실렸다 · 무거워졌다 · <em>잠겼다</em></h2>
+    <div class="keys">
+      <div class="key"><div class="ic">📦</div><div class="en">INCLUSION</div><b>실렸다</b><p>블록에 담긴 순간. receipt가 발행되고 ✓가 뜬다. 하지만 아직 교체될 수 있다.</p></div>
+      <div class="key"><div class="ic">🧱</div><div class="en">CONFIRMATIONS</div><b>무거워졌다</b><p>내 블록 위에 쌓인 블록 수. 쌓일수록 되돌리기 어려워진다 — 확률적 안심.</p></div>
+      <div class="key"><div class="ic">🔒</div><div class="en">FINALITY</div><b>잠겼다</b><p>합의가 체크포인트에 자물쇠를 채운 순간. 이제 어떤 가지도 이 앞을 못 바꾼다.</p></div>
+    </div>
+    <div class="oneline">✓는 <b>“실렸다”</b>는 사건, 🔒는 <b>“되돌릴 수 없다”</b>는 사건 — 둘 사이엔 시간이 있다</div>
+  </div>
+</section>
+
+<!-- 6 · 연결 + 판단 게임 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">연결</span> 오늘 세 교시가 만드는 그림 <span class="min">7'</span></div>
+    <h2>“언제 믿을 것인가”는 <em>돈의 크기가 정한다</em></h2>
+    <div class="rail3">
+      <div class="stn">
+        <div class="t">1교시 · 리서치</div>
+        <h4>RWA · STO · 스테이블코인</h4>
+        <p>실물 자산이 체인에 올라올 때의 <b>정산 문제</b></p>
+      </div>
+      <div class="stn now">
+        <div class="t">2교시 · 지금</div>
+        <h4>거래 포함과 Finality</h4>
+        <p>거래는 언제 포함되고 <b>언제 확정</b>되는가</p>
+      </div>
+      <div class="stn">
+        <div class="t">3교시 · 개발</div>
+        <h4>블록 생성과 합의 경계</h4>
+        <p>그 확정이 <b>코드 어디에서</b> 만들어지는가</p>
+      </div>
+    </div>
+    <div class="judge">
+      <div class="lbl">게임 · 지금 믿을까, 더 기다릴까 — 네 상황을 판단해 보세요 <span class="jscore" id="jscore">0 / 4</span></div>
+      <div id="jlist"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · 산출물 -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow"><span class="wk">산출물</span> 한 문장의 구분 <span class="min">3'</span></div>
+    <h2>inclusion과 Finality는 <em>왜 다른가</em></h2>
+    <div class="outgrid">
+      <div class="timerbox">
+        <div class="timer" id="timer">03:00</div>
+        <div class="btnrow" style="justify-content:center">
+          <button onclick="startTimer()">시작</button>
+          <button class="btn-ghost" onclick="resetTimer()">리셋</button>
+        </div>
+        <p class="dim" style="font-size:14px;margin-top:14px">6주차 위험 지도에서 “언제부터 믿을 수 있는가”의 기준선이 됩니다.</p>
+      </div>
+      <div class="flowform">
+        <div class="fcell"><label><i>핵심</i>inclusion과 Finality가 다른 이유 (한 문장)</label><textarea id="o1" placeholder="예: 포함은 한 블록에 실렸다는 사건일 뿐 경쟁 가지에 의해 교체될 수 있고, Finality는 합의가 체크포인트를 잠가 어떤 가지로도 되돌릴 수 없게 된 사건이기 때문이다."></textarea></div>
+        <div class="fcell"><label><i>선택</i>오늘 가장 헷갈렸던 것 하나</label><textarea id="o2" placeholder="예: reorg 때 내 거래가 사라지지 않고 txpool로 돌아간다는 게 신기했다."></textarea></div>
+        <div>
+          <div class="btnrow" style="margin-top:0">
+            <button onclick="submitForm()">구글폼으로 제출</button>
+            <button class="btn-ghost" onclick="copyOutput()">복사</button>
+            <button class="btn-ghost" onclick="downloadOutput()">TXT 백업</button>
+          </div>
+          <p class="dim" style="font-size:13.5px;margin-top:10px">작성 내용은 이 브라우저에 자동 저장되어, 조립 페이지에서 나만의 “트랜잭션 생애주기 지도”로 합쳐집니다. 제출된 답 중 몇 개는 다음 주 도입 2분에서 소개됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="nav"><button onclick="go(-1)" aria-label="이전 슬라이드">↑</button><button onclick="go(1)" aria-label="다음 슬라이드">↓</button></div>
+
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function toast(t){const x=$('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1700)}
+function cap(el,text,mode){el.textContent=text;el.className='caption'+(mode?' '+mode:'')}
+
+/* ---- 예측 퀴즈 ---- */
+const qzSel={};
+function qpick(id,i){
+  const el=$(id); if(el.dataset.done)return;
+  qzSel[id]=i;
+  [...el.querySelectorAll('.qopt')].forEach((b,k)=>b.className='qopt'+(k===i?' sel':''));
+}
+function qreveal(id,ans){
+  const el=$(id); if(el.dataset.done)return; el.dataset.done='1';
+  [...el.querySelectorAll('.qopt')].forEach((b,k)=>{
+    if(k===ans)b.className='qopt right';
+    else if(qzSel[id]===k)b.className='qopt wrong';
+    else b.className='qopt';
+  });
+}
+function qreset(id){
+  const el=$(id); delete el.dataset.done; delete qzSel[id];
+  [...el.querySelectorAll('.qopt')].forEach(b=>b.className='qopt');
+}
+
+/* ---- 활동1 · 세 단계 ---- */
+let lifeBusy=false;
+function resetLife(){
+  lifeBusy=false;
+  ['ls0','ls1','ls2'].forEach(i=>$(i).className='lstep');
+  $('mmS').textContent='—'; $('mmS').className='mmstat';
+  $('confN').textContent='0';
+  qreset('qz1');
+  cap($('lCap'),'재생을 누르면 거래 하나가 세 단계를 통과하는 시간을 봅니다.');
+}
+async function playLife(){
+  if(lifeBusy)return; resetLife(); lifeBusy=true;
+  $('ls0').className='lstep on';
+  $('mmS').textContent='⏳ 대기 중…';
+  cap($('lCap'),'① 거래가 txpool에서 기다립니다 — 2주차에서 본 그 대기실.');
+  await wait(1300); if(!lifeBusy)return;
+  $('ls0').className='lstep done'; $('ls1').className='lstep on';
+  $('mmS').textContent='✓ 완료'; $('mmS').className='mmstat ok'; $('confN').textContent='1';
+  cap($('lCap'),'② 블록에 포함 — receipt가 발행되고 메타마스크에 ✓가 뜹니다. 4주차의 그 순간. 그런데…');
+  await wait(1400); if(!lifeBusy)return;
+  for(let c=2;c<=5;c++){
+    $('confN').textContent=c;
+    cap($('lCap'),`위로 블록이 ${c}개째 쌓입니다 — 쌓일수록 내 블록을 되돌리기 어려워집니다.`);
+    await wait(650); if(!lifeBusy)return;
+  }
+  $('ls1').className='lstep done'; $('ls2').className='lstep done';
+  $('confN').textContent='🔒';
+  qreveal('qz1',1);
+  cap($('lCap'),'③ 체크포인트가 확정되며 Finality — 이제부터는 어떤 일이 있어도 되돌아가지 않습니다. ✓와 🔒는 다른 사건이었습니다.','ok');
+  lifeBusy=false;
+}
+
+/* ---- 활동2 · reorg 실험실 ---- */
+const lab={main:[],alt:[],grown:false,reorged:false,locked:false};
+let labBusy=false;
+function blkHTML(b){
+  const cls=['blk'];
+  if(b.mine)cls.push('mine');
+  if(b.orphan)cls.push('orphan');
+  if(b.alt)cls.push('alt');
+  if(b.locked)cls.push('locked');
+  return `<div class="${cls.join(' ')}" id="bk${b.id}">#${b.n}<small>${b.tag||''}</small></div>`;
+}
+function labDraw(){
+  $('mainLane').innerHTML='<span class="lanetag">채택 체인</span>'+lab.main.map(blkHTML).join('');
+  $('altLane').innerHTML='<span class="lanetag">경쟁 가지</span>'+lab.alt.map(blkHTML).join('');
+}
+function resetLab(){
+  labBusy=false;
+  lab.main=[];lab.alt=[];lab.grown=false;lab.reorged=false;lab.locked=false;
+  labDraw();
+  $('ejChip').classList.remove('show'); $('poolNote').textContent='— 비어 있음';
+  cap($('rCap'),'①부터 순서대로 실험해 보세요.');
+}
+let bid=0;
+function nb(n,opt={}){return Object.assign({id:++bid,n},opt)}
+async function playGrow(){
+  if(labBusy)return; resetLab(); labBusy=true;
+  cap($('rCap'),'블록이 하나씩 붙습니다…');
+  const seq=[nb(101),nb(102),nb(103,{mine:true,tag:'★'}),nb(104),nb(105)];
+  for(const b of seq){
+    lab.main.push(b); labDraw();
+    if(b.mine)cap($('rCap'),'#103에 내 거래가 실렸습니다 — 포함! receipt 발행, ✓ 표시.');
+    await wait(720); if(!labBusy)return;
+  }
+  lab.grown=true;
+  cap($('rCap'),'내 블록 위에 2개가 쌓였습니다. 안전해 보이지만… ②를 눌러 보세요.','ok');
+  labBusy=false;
+}
+async function playReorg(){
+  if(labBusy)return;
+  if(!lab.grown){toast('먼저 ① 체인 성장을 실행하세요');return}
+  if(lab.reorged){toast('이미 reorg가 일어났습니다. ③ 또는 초기화를 눌러 보세요');return}
+  labBusy=true;
+  cap($('rCap'),'다른 편에서 경쟁 가지가 나타납니다 — #103′부터 다르게 자란 체인…');
+  lab.alt=[nb('103p',{alt:true,tag:"103′"}),nb('104p',{alt:true,tag:"104′"}),nb('105p',{alt:true,tag:"105′"}),nb('106p',{alt:true,tag:"106′"})];
+  lab.alt.forEach(b=>{b.n='';});
+  labDraw();
+  await wait(1400); if(!labBusy)return;
+  cap($('rCap'),'경쟁 가지가 더 무겁습니다(더 많은 지지) — 노드들이 갈아탑니다!','warn');
+  lab.main.forEach((b,i)=>{if(i>=2)b.orphan=true});
+  labDraw();
+  await wait(1000); if(!labBusy)return;
+  $('ejChip').classList.add('show'); $('poolNote').textContent='내 거래가 체인에서 떨어져 대기실로 돌아왔습니다';
+  cap($('rCap'),'내 블록 #103이 고아가 됐습니다. ✓까지 떴던 거래가 다시 txpool로 — 사라진 건 아닙니다.','bad');
+  await wait(1600); if(!labBusy)return;
+  lab.main=lab.main.slice(0,2).concat(lab.alt.map(b=>({...b,alt:false,n:'',orphan:false})));
+  lab.alt=[]; labDraw();
+  await wait(900); if(!labBusy)return;
+  lab.main.push(nb('107',{mine:true,tag:'★ 재포함'})); lab.main[lab.main.length-1].n='';
+  labDraw();
+  $('ejChip').classList.remove('show'); $('poolNote').textContent='다음 블록에 다시 실렸습니다';
+  lab.reorged=true;
+  cap($('rCap'),'새 체인의 다음 블록에 내 거래가 다시 포함됐습니다. 대개는 이렇게 복귀하지만 — “포함”이 확정이 아닌 이유를 봤습니다.','ok');
+  labBusy=false;
+}
+async function playFinal(){
+  if(labBusy)return;
+  if(!lab.main.length){toast('먼저 ① 체인 성장을 실행하세요');return}
+  labBusy=true;
+  cap($('rCap'),'검증자들의 합의가 체크포인트에 도달합니다…');
+  const upto=Math.min(3,lab.main.length);
+  for(let i=0;i<upto;i++){
+    lab.main[i].locked=true; labDraw();
+    await wait(500); if(!labBusy)return;
+  }
+  lab.locked=true;
+  cap($('rCap'),'🔒 finalized — 자물쇠가 채워진 블록들은 이제 어떤 경쟁 가지로도 교체되지 않습니다. 이 앞에서 reorg를 시도하면?','ok');
+  await wait(1200); if(!labBusy)return;
+  lab.main.slice(0,upto).forEach(b=>{const el=$('bk'+b.id);if(el){el.classList.add('denyfx');setTimeout(()=>el.classList.remove('denyfx'),600)}});
+  cap($('rCap'),'거부됩니다 — 프로토콜이 finalized 이전으로는 절대 돌아가지 않습니다. 이것이 inclusion과 finality의 차이.','ok');
+  labBusy=false;
+}
+
+/* ---- 활동3 · 두 개의 시계 ---- */
+let ckBusy=false;
+function mile(id,on){$(id).className=on?'hit':''}
+function resetClocks(){
+  ckBusy=false;
+  $('cbOn').style.width='0'; $('cbOff').style.width='0';
+  ['m0','m1','m2','n0','n1','n2'].forEach(i=>mile(i,false));
+  $('onMsg').textContent='—'; $('offMsg').textContent='—';
+  qreset('qz2');
+  cap($('cCap'),'재생을 눌러 두 시계의 속도 차이를 확인해 보세요.');
+}
+async function playClocks(){
+  if(ckBusy)return; resetClocks(); ckBusy=true;
+  cap($('cCap'),'매수 버튼을 눌렀습니다 — 두 시계가 동시에 출발합니다.');
+  mile('m0',true); mile('n0',true);
+  $('onMsg').textContent='거래 전송됨'; $('offMsg').textContent='매수 접수됨';
+  $('cbOn').style.width='18%'; $('cbOff').style.width='8%';
+  await wait(1100); if(!ckBusy)return;
+  mile('m1',true); $('cbOn').style.width='55%';
+  $('onMsg').textContent='블록 포함 ✓ — 몇 초 만에';
+  await wait(1200); if(!ckBusy)return;
+  mile('m2',true); $('cbOn').style.width='100%';
+  $('onMsg').textContent='finalized 🔒 — 약 13분. 체인은 여기서 끝';
+  $('cbOff').style.width='30%'; $('offMsg').textContent='…아직 명의개서·정산 처리 중';
+  cap($('cCap'),'온체인 시계는 13분 만에 끝났습니다. 하지만 아래 시계는 이제 30%…','warn');
+  await wait(1600); if(!ckBusy)return;
+  mile('n1',true); $('cbOff').style.width='65%';
+  $('offMsg').textContent='운영기관 장부 반영 중 (몇 시간)';
+  await wait(1300); if(!ckBusy)return;
+  mile('n2',true); $('cbOff').style.width='100%';
+  $('offMsg').textContent='법적 장부 확정 — D+1 이후';
+  qreveal('qz2',1);
+  cap($('cCap'),'법적 소유권은 하루 뒤에야 확정됐습니다. 온체인 finality ≠ 세상의 finality — RWA·STO 설계의 핵심 난제입니다.','ok');
+  ckBusy=false;
+}
+
+/* ---- 판단 게임 ---- */
+const JQ=[
+  ['카페에서 5천 원 결제 — 방금 블록에 포함됐다. 커피를 내줘도 될까?','믿는다','소액이라 되돌릴 유인도, 성공 확률도 사실상 없습니다. 포함이면 충분합니다.'],
+  ['거래소에 10억 원 입금 — 방금 포함됐다. 즉시 잔액에 반영해도 될까?','기다린다','금액이 크면 reorg의 표적이 될 수 있어, 실제 거래소들도 finality 또는 충분한 확인 수까지 기다립니다.'],
+  ['STO 매수가 finalized 됐다. “법적 소유권 이전도 끝났다”고 안내해도 될까?','기다린다','활동 3 — 명의개서 등 오프체인 장부는 별도의 시계로 확정됩니다.'],
+  ['브릿지로 자산을 옮겼다. 원래 체인에서 포함 직후, 도착 체인에서 바로 큰돈을 내줘도 될까?','기다린다','브릿지는 원체인의 finality를 기다려야 안전합니다 — 3주차의 lock & mint가 reorg를 만나면 이중 발행 위험.'],
+];
+let jDone=0,jRight=0;
+function judgeRender(){
+  jDone=0; jRight=0; $('jscore').textContent='0 / 4';
+  $('jlist').innerHTML=JQ.map((q,i)=>`
+    <div class="jitem" id="ji${i}">
+      <div class="jq">
+        <span class="txt">${i+1}. ${q[0]}</span>
+        <span class="jbtns">
+          <button onclick="jPick(${i},'믿는다',this)">지금 믿는다</button>
+          <button onclick="jPick(${i},'기다린다',this)">더 기다린다</button>
+        </span>
+      </div>
+      <div class="jexp" id="je${i}"></div>
+    </div>`).join('');
+}
+function jPick(i,val,btn){
+  const item=$('ji'+i); if(item.dataset.done)return; item.dataset.done='1';
+  const correct=JQ[i][1];
+  item.querySelectorAll('.jbtns button').forEach(b=>{
+    if(b.textContent.includes(correct))b.classList.add('right');
+    else if(b===btn)b.classList.add('wrong');
+  });
+  if(val===correct)jRight++;
+  jDone++; $('jscore').textContent=jRight+' / 4';
+  const e=$('je'+i); e.textContent=(val===correct?'좋은 판단 — ':'다시 생각해보면 — ')+JQ[i][2]; e.classList.add('show');
+  if(jDone===4)toast('완료! "언제 믿는가"는 기술이 아니라 판단의 문제였습니다.');
+}
+
+/* ---- 저장·제출 ---- */
+const WEEK=5, LSKEY='bay18.w'+WEEK;
+function buildOutput(){
+  return `[BAY18-W5] 거래 포함과 Finality\ninclusion vs finality: ${$('o1').value}\n헷갈린 것: ${$('o2').value}`;
+}
+function saveLocal(){
+  try{localStorage.setItem(LSKEY,JSON.stringify({
+    f:{o1:$('o1').value,o2:$('o2').value},
+    text:buildOutput(),ts:Date.now()
+  }))}catch(e){}
+}
+function restoreLocal(){
+  try{const d=JSON.parse(localStorage.getItem(LSKEY)||'null');
+    if(d&&d.f)['o1','o2'].forEach(k=>{if(d.f[k])$(k).value=d.f[k]});
+  }catch(e){}
+}
+function doCopy(text){
+  return navigator.clipboard.writeText(text).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);
+    ta.select();document.execCommand('copy');ta.remove();
+  });
+}
+async function copyOutput(){
+  saveLocal(); await doCopy(buildOutput());
+  toast('복사 완료! 제출 채널에 붙여넣어 주세요.');
+}
+async function submitForm(){
+  saveLocal();
+  const c=window.BAY18_CONFIG||{};
+  if(!c.formAction||!c.fields||!c.fields.output){
+    await doCopy(buildOutput());
+    toast('구글폼 설정 전이라 대신 복사했습니다. 채널에 붙여넣어 주세요.');
+    return;
+  }
+  const p=new URLSearchParams({usp:'pp_url'});
+  const name=localStorage.getItem('bay18.name')||'';
+  const member=localStorage.getItem('bay18.member')||'';
+  if(c.fields.week)p.set(c.fields.week,'W'+WEEK);
+  if(c.fields.term&&c.term)p.set(c.fields.term,c.term);
+  if(c.fields.member&&member)p.set(c.fields.member,member);
+  if(c.fields.name&&name)p.set(c.fields.name,name);
+  p.set(c.fields.output,buildOutput());
+  window.open(c.formAction+'?'+p.toString(),'_blank');
+  toast('구글폼이 열렸습니다. 확인 후 제출을 눌러 주세요.');
+}
+function downloadOutput(){
+  saveLocal();
+  const blob=new Blob([buildOutput()+'\n'],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='BAY_5주차_산출물.txt';a.click();URL.revokeObjectURL(url);
+  toast('저장했습니다.');
+}
+['o1','o2'].forEach(k=>$(k).addEventListener('input',saveLocal));
+
+/* ---- 타이머 ---- */
+let tId=null,remain=180;
+function drawT(){
+  const t=$('timer');
+  t.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
+  t.className='timer'+(remain<=0?' over':remain<=30?' warn':'');
+}
+function startTimer(){if(tId)return;tId=setInterval(()=>{remain--;drawT();if(remain<=0){clearInterval(tId);tId=null;toast('3분 종료! 제출 버튼을 눌러 주세요.')}},1000)}
+function resetTimer(){clearInterval(tId);tId=null;remain=180;drawT()}
+
+/* ---- 네비게이션 ---- */
+const secs=[...document.querySelectorAll('section')];
+function cur(){let bi=0,bd=1e9;secs.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<bd){bd=d;bi=i}});return bi}
+function go(d){secs[Math.max(0,Math.min(secs.length-1,cur()+d))].scrollIntoView({behavior:'smooth'})}
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(['ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();go(1)}
+  if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
+});
+addEventListener('scroll',()=>{$('progress').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'});
+drawT(); resetLife(); resetLab(); resetClocks(); judgeRender(); restoreLocal();
+</script>
+</body>
+</html>
