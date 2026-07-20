@@ -103,6 +103,15 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .rtag{display:inline-block;font-size:10.5px;border-radius:99px;padding:2px 8px;margin-left:auto;float:right}
 .rec .mode{font-size:11.5px;font-weight:800;border-radius:99px;padding:3px 9px;margin-left:auto}
 .mode-ow{background:#dbe9ff;color:#1d4f89}.mode-add{background:#def7ea;color:#116340}.mode-bc{background:#fdeed3;color:#8a5a12}
+.recordsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.recordstep{display:flex;gap:9px;align-items:flex-start;padding:11px 12px;border-radius:var(--r-sm);background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink-dim);transition:.35s}
+.recordstep .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:rgba(255,255,255,.1);font-family:var(--mono);font-size:11px;font-weight:800}
+.recordstep b{display:block;font-size:13.5px;margin-bottom:3px;color:inherit}
+.recordstep p{margin:0;font-size:11.5px;line-height:1.45;color:inherit}
+.recordstep.on{border-color:rgba(83,220,255,.55);background:rgba(83,220,255,.1);color:#dcebff}
+.recordstep.done{border-color:rgba(79,223,156,.55);background:rgba(79,223,156,.1);color:#d7f7e6}
+.recordstep.done .num{background:var(--green);color:#04321c;font-size:0}
+.recordstep.done .num::before{content:"✓";font-size:11px}
 
 /* 분류 게임 */
 .sortgame{margin-top:22px;border-top:1px dashed var(--line);padding-top:20px}
@@ -113,8 +122,14 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .schip.sel{outline:3px solid var(--cyan)}
 .schip.gone{opacity:0;pointer-events:none;transform:scale(.5)}
 .schip.no{animation:shake .45s;background:#ffe3e9;color:#8c2340}
-.sbuckets{display:flex;gap:8px;flex-wrap:wrap}
-.sbucket{flex:1 1 140px;background:rgba(255,255,255,.09);border:1px dashed var(--line);color:#dcebff;font-weight:800}
+.sbuckets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sbucket{min-width:0;min-height:92px;background:rgba(255,255,255,.09);border:1px dashed var(--line);color:#dcebff;font-weight:800;display:flex;flex-direction:column;align-items:stretch;gap:9px;text-align:left}
+.sbucket-title{text-align:center}
+.sbucket.hit{border-color:var(--green);background:rgba(79,223,156,.14);box-shadow:0 0 18px rgba(79,223,156,.18)}
+.saccepted{display:flex;flex-direction:column;gap:5px;min-height:24px}
+.saccepted:empty::before{content:"여기에 분류";display:block;text-align:center;color:var(--ink-dim);font-size:11px;font-weight:500}
+.saccepted-item{display:block;background:#def7ea;color:#116340;border-radius:7px;padding:6px 8px;font-family:var(--mono);font-size:11px;font-weight:700;line-height:1.35;animation:acceptedIn .3s ease-out}
+@keyframes acceptedIn{from{opacity:0;transform:translateY(-5px) scale(.96)}to{opacity:1;transform:none}}
 
 /* ===== 활동2 · 실패의 두 얼굴 ===== */
 .failgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -128,12 +143,13 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .frow .mark.y{color:#1e9e64}.frow .mark.n{color:#c02446}.frow .mark.z{color:#8a5a12}
 
 /* ===== 활동3 · state root 지문 ===== */
-.fp{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:stretch}
+.fp{display:grid;grid-template-columns:1fr .78fr 1fr;gap:16px;align-items:stretch}
 .fpstate{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:16px}
 .fpstate h4{margin:0 0 10px;font-size:15px}
 .fpcell{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13.5px;background:#eef3fc;
   border-radius:8px;padding:9px 10px;margin-bottom:6px;color:#31507f;transition:.3s}
 .fpcell.hot{background:#fff1d6;outline:2px solid var(--amber)}
+.fpcell.peer{background:#def7ea;outline:2px solid var(--green)}
 .fpcompare{background:linear-gradient(160deg,#0e2246,#132c58);border:1px solid rgba(148,143,255,.4);border-radius:var(--r-md);
   padding:18px;display:flex;flex-direction:column;gap:12px;justify-content:center;align-items:center;text-align:center}
 .roottag{font-family:var(--mono);font-size:15px;font-weight:800;border-radius:10px;padding:10px 14px;background:rgba(255,255,255,.08);
@@ -215,10 +231,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .stn p{font-size:14.5px;color:var(--ink-dim);margin:0;line-height:1.55}
 
 /* ===== 산출물 ===== */
-.outgrid{display:grid;grid-template-columns:minmax(220px,.8fr) 2fr;gap:20px;align-items:start}
-.timerbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;text-align:center}
-.timer{font-family:var(--mono);font-size:clamp(52px,6vw,76px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.timer.warn{color:var(--amber)} .timer.over{color:var(--red)}
+.outgrid{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
 .flowform{display:grid;grid-template-columns:1fr;gap:10px}
 .fcell{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px}
 .fcell label{font-size:13px;font-weight:800;color:#3d5885;display:flex;align-items:center;gap:6px}
@@ -236,6 +249,8 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 
 @media (max-width:920px){
   .records{grid-template-columns:1fr}
+  .recordsteps{grid-template-columns:1fr}
+  .sbuckets{grid-template-columns:1fr}
   .failgrid,.fp,.outgrid{grid-template-columns:1fr}
   .logi{grid-template-columns:1fr}
   .zone-rpc{min-height:100px}
@@ -267,7 +282,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">W4</span> BAY 18기 온보딩 · 2교시 <span class="min">30 MIN</span></div>
-    <div class="lastweek">지난주 — 스왑이 <b>storage</b>를 바꿨다 · 그런데 그 결과는 어디에, 어떻게 남을까?</div>
+    <div class="lastweek">지난주 — 스왑이 <b>storage</b>를 바꿨습니다 · 그런데 그 결과는 어디에, 어떻게 남을까요?</div>
     <h1>실행이 남기는 것은<br><em>세 가지</em>다</h1>
     <p class="lead">같은 스왑 한 건이 <b>state</b>(지금의 장부), <b>receipt</b>(그때의 실행 증빙), <b>event log</b>(바깥으로의 방송) 세 곳에 서로 다른 방식으로 남습니다. 이 셋을 구분하면 이더스캔이 읽힙니다.</p>
     <div class="formula">
@@ -304,6 +319,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
           <div class="ritem" id="r1a">status: success ✓</div>
           <div class="ritem" id="r1b">gasUsed: 52,341</div>
           <div class="ritem" id="r1c">logs: 2건 포함</div>
+          <div class="ritem" id="r1d">blockNumber (RPC): 19,842,731</div>
         </div>
         <div class="rec" id="rc2">
           <h4>📢 Event Log <span class="mode mode-bc">방송됨</span></h4>
@@ -312,18 +328,23 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
           <div class="ritem" id="r2b">Transfer(풀→나, B 18)</div>
         </div>
       </div>
-      <div class="caption" id="rCap">기록하기를 누르면 한 거래의 결과가 세 곳으로 갈라져 남는 걸 봅니다.</div>
+      <div class="recordsteps">
+        <div class="recordstep" id="rs0"><span class="num">1</span><div><b>State · 최신값으로 덮어쓰기</b><p>잔액 세 칸이 새 값으로 덮어써집니다. 이전 값은 현재 state에 남지 않습니다.</p></div></div>
+        <div class="recordstep" id="rs1"><span class="num">2</span><div><b>Receipt · 실행 증빙 추가</b><p>이 거래 전용 증빙 한 장이 발행돼 쌓입니다. 성공 여부와 실제 gas 사용량이 남고, RPC 조회에서는 포함 블록 번호도 확인할 수 있습니다.</p></div></div>
+        <div class="recordstep" id="rs2"><span class="num">3</span><div><b>Event Log · 외부로 알림</b><p>컨트랙트가 Transfer 이벤트를 기록합니다. 지갑·이더스캔·디앱이 이 알림을 읽습니다.</p></div></div>
+      </div>
+      <div class="caption" id="rCap">기록하기를 누르면 한 거래의 결과가 세 곳으로 갈라져 남게 됩니다.</div>
       <div class="btnrow">
         <button onclick="playRecords()">실행 결과 기록하기</button>
         <button class="btn-ghost" onclick="resetRecords()">초기화</button>
       </div>
       <div class="sortgame">
-        <div class="sortlbl">게임 · 이건 어디에 남을까? — 항목을 누르고, 맞는 서랍을 누르세요 <span class="sortscore" id="sscore">0 / 6</span></div>
+        <div class="sortlbl">이건 어디에 남을까? — 항목을 누르고, 넣어야 할 곳을 누르세요 <span class="sortscore" id="sscore">0 / 6</span></div>
         <div class="schips" id="schips"></div>
         <div class="sbuckets">
-          <button class="sbucket" onclick="sTry(0)">🗄️ State</button>
-          <button class="sbucket" onclick="sTry(1)">🧾 Receipt</button>
-          <button class="sbucket" onclick="sTry(2)">📢 Log</button>
+          <button class="sbucket" id="sbucket0" onclick="sTry(0)"><span class="sbucket-title">🗄️ State</span><span class="saccepted" id="saccepted0"></span></button>
+          <button class="sbucket" id="sbucket1" onclick="sTry(1)"><span class="sbucket-title">🧾 Receipt</span><span class="saccepted" id="saccepted1"></span></button>
+          <button class="sbucket" id="sbucket2" onclick="sTry(2)"><span class="sbucket-title">📢 Log</span><span class="saccepted" id="saccepted2"></span></button>
         </div>
       </div>
     </div>
@@ -394,13 +415,20 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
           <div class="roottag" id="peerRoot">0x————</div>
           <div class="fpres" id="fpRes"></div>
         </div>
+        <div class="fpstate">
+          <h4>이웃 노드의 state (일부)</h4>
+          <div class="fpcell" id="pc0"><span>balance[Alice]</span><span class="v">40</span></div>
+          <div class="fpcell" id="pc1"><span>balance[Bob]</span><span class="v">18</span></div>
+          <div class="fpcell" id="pc2"><span>balance[Carol]</span><span class="v">5</span></div>
+          <div class="fpcell" id="pc3"><span>balance[Dave]</span><span class="v">9</span></div>
+        </div>
       </div>
-      <div class="caption" id="pCap">모든 상태값을 압축한 요약 해시가 state root — 블록 헤더에 실리는 “상태의 지문”입니다.</div>
+      <div class="caption" id="pCap">모든 상태값을 압축한 요약 해시가 state root입니다. 블록 헤더에 실리는 “상태의 지문”이라고 보시면 됩니다.</div>
       <div class="btnrow">
         <button class="btn-amber" onclick="tamperState()">잔액 하나 슬쩍 바꾸기 (Alice 40→41)</button>
         <button class="btn-ghost" onclick="restoreState()">되돌리기</button>
       </div>
-      <p class="keynote">1주차의 “모든 노드가 같은 상태”는 사실 이렇게 확인합니다 — 장부 수백만 줄이 아니라 <b>root 한 줄</b>. 숫자 하나만 달라도 지문 전체가 변합니다. 이 지문을 효율적으로 만드는 자료구조(트라이)는 3교시에서.</p>
+      <p class="keynote">1주차의 “모든 노드가 같은 상태”는 사실 이렇게 장부 수백만 줄이 아니라 <b>root 한 줄</b>로 확인합니다. 숫자 하나만 달라도 지문 전체가 변합니다. 이 지문을 효율적으로 만드는 자료구조는 <b>트라이(trie)</b>라고 합니다.</p>
     </div>
   </div>
 </section>
@@ -451,7 +479,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <button class="btn-ghost" onclick="playReaders()">③ 이더스캔·디앱은?</button>
         <button class="btn-ghost" onclick="resetLogi()">초기화</button>
       </div>
-      <p class="keynote">지갑에는 코인도, 잔액도, receipt도 없습니다 — <b>열쇠(개인키)만</b> 있습니다(2주차). state와 receipt는 전부 <b>각 노드의 DB</b>에 살고, 모든 노드가 스스로 실행해 같은 기록을 만들며, 그 지문 두 개(stateRoot·receiptsRoot)를 헤더에서 대조합니다(활동 3). 바깥 세상은 RPC로 <b>읽어갈 뿐</b>입니다.</p>
+      <p class="keynote">지갑에는 코인도, 잔액도, receipt도 없습니다.<b>열쇠(개인키)만</b> 있습니다. state와 receipt는 전부 <b>각 노드의 DB</b>에 살고, 모든 노드가 스스로 실행해 같은 기록을 만들며, 그 지문 두 개(stateRoot·receiptsRoot)를 헤더에서 대조합니다. 바깥 세상은 RPC로 <b>읽어갈 뿐</b>입니다.</p>
     </div>
   </div>
 </section>
@@ -505,24 +533,16 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
     <div class="eyebrow"><span class="wk">산출물</span> 두 문장으로 구분하기 <span class="min">3'</span></div>
     <h2>state와 receipt, <em>각각 한 문장</em>으로</h2>
     <div class="outgrid">
-      <div class="timerbox">
-        <div class="timer" id="timer">03:00</div>
-        <div class="btnrow" style="justify-content:center">
-          <button onclick="startTimer()">시작</button>
-          <button class="btn-ghost" onclick="resetTimer()">리셋</button>
-        </div>
-        <p class="dim" style="font-size:14px;margin-top:14px">6주차 위험 분석에서 “무슨 일이 있었는지 추적”할 때 이 구분을 그대로 씁니다.</p>
-      </div>
       <div class="flowform">
-        <div class="fcell"><label><i>state</i>state란 무엇인가 (한 문장)</label><textarea id="o1" placeholder="예: 지금 이 순간 모든 계정·컨트랙트가 갖고 있는 최신 값들의 장부로, 실행될 때마다 덮어써진다."></textarea></div>
-        <div class="fcell"><label><i>receipt</i>receipt란 무엇인가 (한 문장)</label><textarea id="o2" placeholder="예: 각 트랜잭션이 어떻게 실행됐는지(성공/실패, 가스, 로그)를 담아 영원히 쌓이는 실행 증빙이다."></textarea></div>
+        <div class="fcell"><label><i>state</i>state란 무엇인가 (한 문장)</label><textarea id="o1" placeholder=""></textarea></div>
+        <div class="fcell"><label><i>receipt</i>receipt란 무엇인가 (한 문장)</label><textarea id="o2" placeholder=""></textarea></div>
         <div>
           <div class="btnrow" style="margin-top:0">
             <button onclick="submitForm()">구글폼으로 제출</button>
             <button class="btn-ghost" onclick="copyOutput()">복사</button>
             <button class="btn-ghost" onclick="downloadOutput()">TXT 백업</button>
           </div>
-          <p class="dim" style="font-size:13.5px;margin-top:10px">작성 내용은 이 브라우저에 자동 저장되어, 조립 페이지에서 나만의 “트랜잭션 생애주기 지도”로 합쳐집니다. 제출된 답 중 몇 개는 다음 주 도입 2분에서 소개됩니다.</p>
+          <p class="dim" style="font-size:13.5px;margin-top:10px"></p>
         </div>
       </div>
     </div>
@@ -560,27 +580,27 @@ function qreset(id){
 
 /* ---- 활동1 · 기록 3종 ---- */
 let rBusy=false;
-const RITEMS=['r0a','r0b','r0c','r1a','r1b','r1c','r2a','r2b'];
+const RITEMS=['r0a','r0b','r0c','r1a','r1b','r1c','r1d','r2a','r2b'];
 function resetRecords(){
   rBusy=false;
   RITEMS.forEach(i=>$(i).classList.remove('show'));
   ['rc0','rc1','rc2'].forEach(i=>$(i).classList.remove('lit'));
-  cap($('rCap'),'기록하기를 누르면 한 거래의 결과가 세 곳으로 갈라져 남는 걸 봅니다.');
+  ['rs0','rs1','rs2'].forEach(i=>$(i).className='recordstep');
+  cap($('rCap'),'기록하기를 누르면 한 거래의 결과가 세 곳으로 갈라져 남게 됩니다.');
 }
 async function playRecords(){
   if(rBusy)return; resetRecords(); rBusy=true;
-  $('rc0').classList.add('lit');
-  cap($('rCap'),'① State — 잔액 세 칸이 새 값으로 덮어써집니다. 예전 값 50은 이제 어디에도 없습니다.');
+  $('rc0').classList.add('lit'); $('rs0').className='recordstep on';
   for(const i of ['r0a','r0b','r0c']){$(i).classList.add('show');await wait(420);if(!rBusy)return}
   await wait(500); if(!rBusy)return;
-  $('rc0').classList.remove('lit'); $('rc1').classList.add('lit');
-  cap($('rCap'),'② Receipt — 이 거래 전용 증빙 한 장이 발행돼 쌓입니다. 성공 여부와 실제 가스 사용량이 여기 남습니다.');
-  for(const i of ['r1a','r1b','r1c']){$(i).classList.add('show');await wait(420);if(!rBusy)return}
+  $('rc0').classList.remove('lit'); $('rs0').className='recordstep done';
+  $('rc1').classList.add('lit'); $('rs1').className='recordstep on';
+  for(const i of ['r1a','r1b','r1c','r1d']){$(i).classList.add('show');await wait(420);if(!rBusy)return}
   await wait(500); if(!rBusy)return;
-  $('rc1').classList.remove('lit'); $('rc2').classList.add('lit');
-  cap($('rCap'),'③ Event Log — 컨트랙트가 “Transfer 있었음”을 방송합니다. 지갑 알림·이더스캔이 이걸 듣습니다.');
+  $('rc1').classList.remove('lit'); $('rs1').className='recordstep done';
+  $('rc2').classList.add('lit'); $('rs2').className='recordstep on';
   for(const i of ['r2a','r2b']){$(i).classList.add('show');await wait(420);if(!rBusy)return}
-  $('rc2').classList.remove('lit');
+  $('rc2').classList.remove('lit'); $('rs2').className='recordstep done';
   cap($('rCap'),'한 거래 → 세 기록. 덮어써지는 state, 쌓이는 receipt, 방송되는 log — 성격이 전부 다릅니다.','ok');
   rBusy=false;
 }
@@ -592,11 +612,12 @@ const SITEMS=[
   ['gasUsed: 52,341',1],
   ['Transfer(나→풀, 10) 알림',2],
   ['allowance[나→DEX]: 0',0],
-  ['이 거래가 실린 블록 번호',1],
+  ['RPC receipt에 표시되는 블록 번호',1],
 ];
 let sSel=null,sDone=0;
 function sortReset(){
   sSel=null; sDone=0; $('sscore').textContent='0 / 6';
+  for(let i=0;i<3;i++){$('saccepted'+i).innerHTML='';$('sbucket'+i).classList.remove('hit')}
   const sh=SITEMS.map((_,i)=>i).sort(()=>Math.random()-.5);
   $('schips').innerHTML=sh.map(i=>`<button class="schip" data-i="${i}" onclick="sPick(this)">${SITEMS[i][0]}</button>`).join('');
 }
@@ -609,7 +630,13 @@ function sTry(bucket){
   if(!sSel){toast('항목을 먼저 선택하세요');return}
   const i=+sSel.dataset.i;
   if(SITEMS[i][1]===bucket){
-    sSel.classList.add('gone'); sSel=null;
+    const selected=sSel;
+    const placed=document.createElement('span');
+    placed.className='saccepted-item'; placed.textContent='✓ '+SITEMS[i][0];
+    $('saccepted'+bucket).appendChild(placed);
+    const target=$('sbucket'+bucket); target.classList.add('hit');
+    setTimeout(()=>target.classList.remove('hit'),500);
+    selected.classList.add('gone'); setTimeout(()=>selected.remove(),250); sSel=null;
     sDone++; $('sscore').textContent=sDone+' / 6';
     if(sDone===6)toast('완벽! 이더스캔을 읽을 준비가 됐습니다.');
   }else{
@@ -628,7 +655,7 @@ function resetFail(){
 async function playFail(which){
   if(fBusy)return; fBusy=true;
   if(which==='a'){
-    cap($('fCap'),'잔액 부족 거래 — 2주차 관문에서 바로 폐기됩니다…');
+    cap($('fCap'),'잔액 부족 거래 — txpool 포함 전 3가지 검사(서명,nonce,잔액)에서 바로 폐기됩니다…');
     const seq=[['fa0','n'],['fa1','n'],['fa2','n'],['fa3','z']];
     for(const [id,cls] of seq){$(id).className='mark show '+cls;await wait(520);if(!fBusy)return}
     cap($('fCap'),'검증 탈락 — 블록에 실리지 못했으니 체인 어디에도 흔적이 없고, 가스도 내지 않습니다.','warn');
@@ -644,12 +671,15 @@ async function playFail(which){
 
 /* ---- 활동3 · state root 지문 ---- */
 const FP={v:[40,18,5,9]};
+const PEER_STATE=[40,18,5,9];
 function pseudoRoot(arr){let h=0xabc;for(const x of arr){h=(h*33+x*2654435761)>>>0}return '0x'+h.toString(16).toUpperCase().padStart(8,'0').slice(0,8)}
-const PEER=pseudoRoot([40,18,5,9]);
+const PEER=pseudoRoot(PEER_STATE);
 function drawFP(hot){
   FP.v.forEach((v,i)=>{
     const c=$('fc'+i); c.querySelector('.v').textContent=v;
     c.className='fpcell'+(hot===i?' hot':'');
+    const p=$('pc'+i); p.querySelector('.v').textContent=PEER_STATE[i];
+    p.className='fpcell'+(hot===i?' peer':'');
   });
   const my=pseudoRoot(FP.v);
   $('myRoot').textContent=my; $('peerRoot').textContent=PEER;
@@ -689,26 +719,26 @@ function resetLogi(){
 async function playBirth(){
   if(gBusy)return; gBusy=true;
   $('zNode').classList.add('lit'); $('lEvm').classList.add('run');
-  cap($('gCap'),'① 노드가 블록을 실행합니다 — receipt는 트랜잭션에 들어있던 게 아니라, 실행의 부산물로 지금 태어납니다.');
+  cap($('gCap'),'① 노드가 블록을 실행합니다. receipt는 트랜잭션에 들어있던 게 아니라, 실행의 부산물로 지금 태어납니다.');
   await wait(1200); if(!gBusy)return;
   $('lEvm').classList.remove('run');
   $('drawS').classList.add('lit'); $('dcS1').classList.add('show'); $('dcS2').classList.add('show');
   await wait(700); if(!gBusy)return;
   $('drawR').classList.add('lit'); $('dcR1').classList.add('show'); $('dcR2').classList.add('show');
-  cap($('gCap'),'실행 결과가 노드의 두 서랍에 저장됩니다 — 새 state는 StateDB에, receipt와 log는 보관소에.');
+  cap($('gCap'),'실행 결과가 노드의 두 서랍에 저장됩니다. 새 state는 StateDB에, receipt와 log는 보관소에.');
   await wait(1100); if(!gBusy)return;
   $('hRootS').classList.add('stamp'); $('hRootSv').textContent='0x3F8A…';
   await wait(450); if(!gBusy)return;
   $('hRootR').classList.add('stamp'); $('hRootRv').textContent='0xB27C…';
   ['drawS','drawR'].forEach(i=>$(i).classList.remove('lit'));
-  cap($('gCap'),'그리고 두 지문이 헤더에 찍힙니다 — stateRoot뿐 아니라 receiptsRoot도. 모든 노드가 각자 실행해 같은 기록을 만들고, 지문으로 서로를 대조합니다.','ok');
+  cap($('gCap'),'그리고 두 지문이 헤더에 찍힙니다. stateRoot뿐 아니라 receiptsRoot도. 모든 노드가 각자 실행해 같은 기록을 만들고, 지문으로 서로를 대조합니다.','ok');
   $('zNode').classList.remove('lit');
   gBusy=false;
 }
 async function playPoll(){
   if(gBusy)return; gBusy=true;
   $('csMM').classList.add('lit'); csSay('mmStat','⏳ 전송됨… (스피너)','wait');
-  cap($('gCap'),'② 방금 거래를 보낸 메타마스크 — 스피너를 돌리며 노드에 묻기 시작합니다.');
+  cap($('gCap'),'② 방금 거래를 보낸 메타마스크가 스피너를 돌리며 노드에 묻기 시작합니다.');
   await wait(900); if(!gBusy)return;
   $('zRpc').classList.add('lit');
   rpcSay('eth_getTransactionReceipt → "아직 없음(null)"',true);
@@ -721,7 +751,7 @@ async function playPoll(){
   csSay('mmStat','✓ 완료 — 노드가 준 receipt를 보고 바꾼 표시','ok');
   $('zRpc').classList.remove('lit'); rpcSay('—');
   qreveal('qz2',1);
-  cap($('gCap'),'receipt가 도착하자 스피너가 ✓로 바뀝니다. 메타마스크는 receipt를 만들지도 보관하지도 않습니다 — 노드에 물어본 결과를 보여줄 뿐.','ok');
+  cap($('gCap'),'receipt가 도착하자 스피너가 ✓로 바뀝니다. 메타마스크는 receipt를 만들지도 보관하지도 않습니다. 노드에 물어본 결과를 보여줄 뿐입니다.','ok');
   $('csMM').classList.remove('lit');
   gBusy=false;
 }
@@ -737,7 +767,7 @@ async function playReaders(){
   await wait(1100); if(!gBusy)return;
   csSay('dpStat','🔔 "스왑 완료" — log를 듣고 화면 갱신','ok');
   $('csDP').classList.remove('lit');
-  cap($('gCap'),'디앱은 log 방송을 구독해 화면을 갱신합니다. 셋 다 공통점 — 기록의 원본은 노드에 있고, 바깥은 읽어갈 뿐입니다.','ok');
+  cap($('gCap'),'디앱은 log 방송을 구독해 화면을 갱신합니다. 셋 다의 공통점은 기록의 원본은 노드에 있고, 바깥은 읽어갈 뿐이라는 점입니다.','ok');
   gBusy=false;
 }
 
@@ -838,16 +868,6 @@ function downloadOutput(){
 }
 ['o1','o2'].forEach(k=>$(k).addEventListener('input',saveLocal));
 
-/* ---- 타이머 ---- */
-let tId=null,remain=180;
-function drawT(){
-  const t=$('timer');
-  t.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
-  t.className='timer'+(remain<=0?' over':remain<=30?' warn':'');
-}
-function startTimer(){if(tId)return;tId=setInterval(()=>{remain--;drawT();if(remain<=0){clearInterval(tId);tId=null;toast('3분 종료! 제출 버튼을 눌러 주세요.')}},1000)}
-function resetTimer(){clearInterval(tId);tId=null;remain=180;drawT()}
-
 /* ---- 네비게이션 ---- */
 const secs=[...document.querySelectorAll('section')];
 function cur(){let bi=0,bd=1e9;secs.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<bd){bd=d;bi=i}});return bi}
@@ -858,7 +878,7 @@ addEventListener('keydown',e=>{
   if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
 });
 addEventListener('scroll',()=>{$('progress').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'});
-drawT(); resetRecords(); sortReset(); resetFail(); drawFP(); resetLogi(); oxRender(); restoreLocal();
+resetRecords(); sortReset(); resetFail(); drawFP(); resetLogi(); oxRender(); restoreLocal();
 </script>
 </body>
 </html>

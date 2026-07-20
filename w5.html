@@ -118,6 +118,10 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .blk.orphan{opacity:.32;outline-color:transparent;filter:grayscale(1);text-decoration:line-through}
 .blk.orphan::after{content:"고아"; position:absolute;bottom:-20px;font-size:10.5px;color:var(--red);text-decoration:none}
 .blk.alt{background:#fdeed3}
+.blk.blocked{opacity:.38;outline:2px solid var(--red);filter:grayscale(.65);transform:translateY(3px)}
+.blk.blocked::after{content:"✕";position:absolute;inset:0;display:grid;place-items:center;font-size:30px;color:var(--red);text-shadow:0 1px 3px #fff}
+.altlane.rejected{border:1px dashed rgba(255,109,136,.65);border-radius:12px;padding:8px}
+.altlane.rejected::after{content:"REORG 거부 · FINALIZED 경계";font-family:var(--mono);font-size:11px;font-weight:800;color:var(--red);margin-left:auto}
 .blk.locked{background:#0e1f3d;color:#c9f5df}
 .blk.locked small{color:#6f86ad}
 .blk.locked::before{content:"🔒";position:absolute;top:-13px;right:-7px;font-size:15px}
@@ -127,6 +131,16 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .txchip{background:#fffdf6;color:#2c3550;border-radius:99px;padding:8px 14px;font-family:var(--mono);font-weight:800;font-size:12.5px;
   box-shadow:0 8px 22px rgba(0,0,0,.35);opacity:0;transform:scale(.5);transition:.45s}
 .txchip.show{opacity:1;transform:none}
+.reorglog{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.revent{display:flex;gap:8px;align-items:flex-start;padding:10px 11px;border-radius:var(--r-sm);background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink-dim);transition:.35s}
+.revent .num{width:21px;height:21px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:rgba(255,255,255,.1);font-family:var(--mono);font-size:10px;font-weight:800}
+.revent b{display:block;font-size:12.5px;margin-bottom:2px;color:inherit}
+.revent p{margin:0;font-size:11px;line-height:1.4;color:inherit}
+.revent.on{border-color:rgba(83,220,255,.55);background:rgba(83,220,255,.1);color:#dcebff}
+.revent.done{border-color:rgba(79,223,156,.55);background:rgba(79,223,156,.1);color:#d7f7e6}
+.revent.done .num{background:var(--green);color:#04321c;font-size:0}
+.revent.done .num::before{content:"✓";font-size:10px}
+.revent.bad{border-color:rgba(255,109,136,.6);background:rgba(255,109,136,.1);color:#ffdbe2}
 
 /* ===== 활동3 · 두 개의 시계 ===== */
 .clocks{display:flex;flex-direction:column;gap:14px}
@@ -178,10 +192,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .stn p{font-size:14.5px;color:var(--ink-dim);margin:0;line-height:1.55}
 
 /* ===== 산출물 ===== */
-.outgrid{display:grid;grid-template-columns:minmax(220px,.8fr) 2fr;gap:20px;align-items:start}
-.timerbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;text-align:center}
-.timer{font-family:var(--mono);font-size:clamp(52px,6vw,76px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.timer.warn{color:var(--amber)} .timer.over{color:var(--red)}
+.outgrid{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
 .flowform{display:grid;grid-template-columns:1fr;gap:10px}
 .fcell{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px}
 .fcell label{font-size:13px;font-weight:800;color:#3d5885;display:flex;align-items:center;gap:6px}
@@ -199,6 +210,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 
 @media (max-width:920px){
   .lifegrid,.outgrid{grid-template-columns:1fr}
+  .reorglog{grid-template-columns:repeat(2,1fr)}
   .keys{grid-template-columns:1fr}
   .blk{width:62px;height:54px}
   .rail3{grid-template-columns:1fr;gap:18px}
@@ -251,9 +263,9 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
     <div class="stage">
       <div class="lifegrid">
         <div class="lifesteps">
-          <div class="lstep" id="ls0"><span class="ic">🧺</span><div><b>1 · 대기 — txpool</b><div class="ds">검증 통과, 블록에 뽑히길 기다리는 중 (2주차)</div></div></div>
-          <div class="lstep" id="ls1"><span class="ic">📦</span><div><b>2 · 포함 — inclusion</b><div class="ds">블록에 실림 · receipt 발행 · 메타마스크 ✓ (4주차)</div></div></div>
-          <div class="lstep" id="ls2"><span class="ic">🔒</span><div><b>3 · 확정 — finality</b><div class="ds">합의가 자물쇠를 채움 · 이제 절대 되돌아가지 않음</div></div></div>
+          <div class="lstep" id="ls0"><span class="ic">🧺</span><div><b>1 · 대기 — txpool</b><div class="ds" id="ld0">검증 통과, 블록에 뽑히길 기다리는 중 (2주차)</div></div></div>
+          <div class="lstep" id="ls1"><span class="ic">📦</span><div><b>2 · 포함 — inclusion</b><div class="ds" id="ld1">블록에 실림 · receipt 발행 · 메타마스크 ✓ (4주차)</div></div></div>
+          <div class="lstep" id="ls2"><span class="ic">🔒</span><div><b>3 · 확정 — finality</b><div class="ds" id="ld2">합의가 자물쇠를 채움 · 이제 절대 되돌아가지 않음</div></div></div>
         </div>
         <div class="mmbox">
           <div class="t">🦊 METAMASK</div>
@@ -294,6 +306,12 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
           <span class="txchip" id="ejChip">★ 내 거래</span>
           <span class="dim" style="font-size:13px" id="poolNote">— 비어 있음</span>
         </div>
+      </div>
+      <div class="reorglog">
+        <div class="revent" id="re0"><span class="num">1</span><div><b>블록 포함</b><p>#103에 거래가 실리고 receipt가 발행됩니다.</p></div></div>
+        <div class="revent" id="re1"><span class="num">2</span><div><b>reorg · 고아화</b><p>더 무거운 경쟁 가지가 채택되며 기존 블록이 빠집니다.</p></div></div>
+        <div class="revent" id="re2"><span class="num">3</span><div><b>txpool 복귀</b><p>빠진 거래가 사라지지 않고 다시 대기합니다.</p></div></div>
+        <div class="revent" id="re3"><span class="num">4</span><div><b>재포함 · Finality</b><p>새 체인에 다시 포함되고, 확정되면 되돌릴 수 없습니다.</p></div></div>
       </div>
       <div class="caption" id="rCap">①부터 순서대로 실험해 보세요.</div>
       <div class="btnrow">
@@ -341,7 +359,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <button onclick="playClocks()">토큰 증권 매매 재생</button>
         <button class="btn-ghost" onclick="resetClocks()">초기화</button>
       </div>
-      <p class="keynote">1교시의 RWA·STO·스테이블코인이 전부 이 문제를 안고 삽니다 — <b>체인의 확정</b>과 <b>법·은행·운영 장부의 확정</b>은 다른 사건이고, 그 틈을 어떻게 메우느냐가 이 산업의 설계 과제입니다.</p>
+      <p class="keynote">RWA·STO·스테이블코인이 전부 이 문제를 가집니다. <b>체인의 확정</b>과 <b>법·은행·운영 장부의 확정</b>은 다른 사건이고, 그 틈을 어떻게 메우느냐가 이 산업의 설계 과제입니다.</p>
     </div>
   </div>
 </section>
@@ -395,24 +413,16 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
     <div class="eyebrow"><span class="wk">산출물</span> 한 문장의 구분 <span class="min">3'</span></div>
     <h2>inclusion과 Finality는 <em>왜 다른가</em></h2>
     <div class="outgrid">
-      <div class="timerbox">
-        <div class="timer" id="timer">03:00</div>
-        <div class="btnrow" style="justify-content:center">
-          <button onclick="startTimer()">시작</button>
-          <button class="btn-ghost" onclick="resetTimer()">리셋</button>
-        </div>
-        <p class="dim" style="font-size:14px;margin-top:14px">6주차 위험 지도에서 “언제부터 믿을 수 있는가”의 기준선이 됩니다.</p>
-      </div>
       <div class="flowform">
-        <div class="fcell"><label><i>핵심</i>inclusion과 Finality가 다른 이유 (한 문장)</label><textarea id="o1" placeholder="예: 포함은 한 블록에 실렸다는 사건일 뿐 경쟁 가지에 의해 교체될 수 있고, Finality는 합의가 체크포인트를 잠가 어떤 가지로도 되돌릴 수 없게 된 사건이기 때문이다."></textarea></div>
-        <div class="fcell"><label><i>선택</i>오늘 가장 헷갈렸던 것 하나</label><textarea id="o2" placeholder="예: reorg 때 내 거래가 사라지지 않고 txpool로 돌아간다는 게 신기했다."></textarea></div>
+        <div class="fcell"><label><i>핵심</i>inclusion과 Finality가 다른 이유 (한 문장)</label><textarea id="o1" placeholder=""></textarea></div>
+        <div class="fcell"><label><i>선택</i>오늘 가장 헷갈렸던 것 하나</label><textarea id="o2" placeholder=""></textarea></div>
         <div>
           <div class="btnrow" style="margin-top:0">
             <button onclick="submitForm()">구글폼으로 제출</button>
             <button class="btn-ghost" onclick="copyOutput()">복사</button>
             <button class="btn-ghost" onclick="downloadOutput()">TXT 백업</button>
           </div>
-          <p class="dim" style="font-size:13.5px;margin-top:10px">작성 내용은 이 브라우저에 자동 저장되어, 조립 페이지에서 나만의 “트랜잭션 생애주기 지도”로 합쳐집니다. 제출된 답 중 몇 개는 다음 주 도입 2분에서 소개됩니다.</p>
+          <p class="dim" style="font-size:13.5px;margin-top:10px"></p>
         </div>
       </div>
     </div>
@@ -450,9 +460,15 @@ function qreset(id){
 
 /* ---- 활동1 · 세 단계 ---- */
 let lifeBusy=false;
+const LIFE_BASE=[
+  '검증 통과, 블록에 뽑히길 기다리는 중 (2주차)',
+  '블록에 실림 · receipt 발행 · 메타마스크 ✓ (4주차)',
+  '합의가 자물쇠를 채움 · 이제 절대 되돌아가지 않음',
+];
+function lifeText(i,text){$('ld'+i).textContent=text}
 function resetLife(){
   lifeBusy=false;
-  ['ls0','ls1','ls2'].forEach(i=>$(i).className='lstep');
+  ['ls0','ls1','ls2'].forEach((id,i)=>{$(id).className='lstep';lifeText(i,LIFE_BASE[i])});
   $('mmS').textContent='—'; $('mmS').className='mmstat';
   $('confN').textContent='0';
   qreset('qz1');
@@ -461,19 +477,25 @@ function resetLife(){
 async function playLife(){
   if(lifeBusy)return; resetLife(); lifeBusy=true;
   $('ls0').className='lstep on';
+  lifeText(0,'검증 통과 · txpool에서 블록 선택 대기 중…');
   $('mmS').textContent='⏳ 대기 중…';
   cap($('lCap'),'① 거래가 txpool에서 기다립니다 — 2주차에서 본 그 대기실.');
   await wait(1300); if(!lifeBusy)return;
+  lifeText(0,'블록 제안자가 거래를 선택 · 대기 완료 ✓');
   $('ls0').className='lstep done'; $('ls1').className='lstep on';
+  lifeText(1,'블록 포함 · receipt 발행 · 메타마스크 ✓ · 1 confirmation');
   $('mmS').textContent='✓ 완료'; $('mmS').className='mmstat ok'; $('confN').textContent='1';
   cap($('lCap'),'② 블록에 포함 — receipt가 발행되고 메타마스크에 ✓가 뜹니다. 4주차의 그 순간. 그런데…');
   await wait(1400); if(!lifeBusy)return;
   for(let c=2;c<=5;c++){
     $('confN').textContent=c;
+    lifeText(1,`블록 포함 유지 · receipt 발행 · ${c} confirmations`);
     cap($('lCap'),`위로 블록이 ${c}개째 쌓입니다 — 쌓일수록 내 블록을 되돌리기 어려워집니다.`);
     await wait(650); if(!lifeBusy)return;
   }
+  lifeText(1,'블록 포함 유지 · receipt 발행 · 5 confirmations ✓');
   $('ls1').className='lstep done'; $('ls2').className='lstep done';
+  lifeText(2,'체크포인트 finalized 🔒 · 이제 되돌릴 수 없음');
   $('confN').textContent='🔒';
   qreveal('qz1',1);
   cap($('lCap'),'③ 체크포인트가 확정되며 Finality — 이제부터는 어떤 일이 있어도 되돌아가지 않습니다. ✓와 🔒는 다른 사건이었습니다.','ok');
@@ -483,11 +505,19 @@ async function playLife(){
 /* ---- 활동2 · reorg 실험실 ---- */
 const lab={main:[],alt:[],grown:false,reorged:false,locked:false};
 let labBusy=false;
+const REORG_BASE=[
+  '#103에 거래가 실리고 receipt가 발행됩니다.',
+  '더 무거운 경쟁 가지가 채택되며 기존 블록이 빠집니다.',
+  '빠진 거래가 사라지지 않고 다시 대기합니다.',
+  '새 체인에 다시 포함되고, 확정되면 되돌릴 수 없습니다.',
+];
+function reorgStep(i,state,text){const el=$('re'+i);el.className='revent'+(state?' '+state:'');el.querySelector('p').textContent=text||REORG_BASE[i]}
 function blkHTML(b){
   const cls=['blk'];
   if(b.mine)cls.push('mine');
   if(b.orphan)cls.push('orphan');
   if(b.alt)cls.push('alt');
+  if(b.blocked)cls.push('blocked');
   if(b.locked)cls.push('locked');
   return `<div class="${cls.join(' ')}" id="bk${b.id}">#${b.n}<small>${b.tag||''}</small></div>`;
 }
@@ -499,18 +529,29 @@ function resetLab(){
   labBusy=false;
   lab.main=[];lab.alt=[];lab.grown=false;lab.reorged=false;lab.locked=false;
   labDraw();
+  $('altLane').classList.remove('rejected');
   $('ejChip').classList.remove('show'); $('poolNote').textContent='— 비어 있음';
+  for(let i=0;i<4;i++)reorgStep(i,'');
   cap($('rCap'),'①부터 순서대로 실험해 보세요.');
 }
 let bid=0;
 function nb(n,opt={}){return Object.assign({id:++bid,n},opt)}
 async function playGrow(){
   if(labBusy)return; resetLab(); labBusy=true;
-  cap($('rCap'),'블록이 하나씩 붙습니다…');
+  $('ejChip').classList.add('show');
+  $('poolNote').textContent='검증 통과 — 블록에 뽑히길 기다리는 중';
+  reorgStep(0,'on','내 거래가 txpool에서 블록 선택을 기다리는 중…');
+  cap($('rCap'),'내 거래가 txpool에 들어왔습니다. 이제 블록 제안자가 선택하기를 기다립니다…');
+  await wait(900); if(!labBusy)return;
   const seq=[nb(101),nb(102),nb(103,{mine:true,tag:'★'}),nb(104),nb(105)];
   for(const b of seq){
     lab.main.push(b); labDraw();
-    if(b.mine)cap($('rCap'),'#103에 내 거래가 실렸습니다 — 포함! receipt 발행, ✓ 표시.');
+    if(b.mine){
+      $('ejChip').classList.remove('show');
+      $('poolNote').textContent='#103에 포함되어 txpool에서 빠졌습니다';
+      reorgStep(0,'done','txpool 대기 → #103에 거래 포함 · receipt 발행 ✓');
+      cap($('rCap'),'블록 제안자가 내 거래를 선택했습니다. txpool에서 빠져 #103에 포함되고 receipt가 발행됩니다.');
+    }
     await wait(720); if(!labBusy)return;
   }
   lab.grown=true;
@@ -522,7 +563,8 @@ async function playReorg(){
   if(!lab.grown){toast('먼저 ① 체인 성장을 실행하세요');return}
   if(lab.reorged){toast('이미 reorg가 일어났습니다. ③ 또는 초기화를 눌러 보세요');return}
   labBusy=true;
-  cap($('rCap'),'다른 편에서 경쟁 가지가 나타납니다 — #103′부터 다르게 자란 체인…');
+  reorgStep(1,'on','더 무거운 경쟁 가지가 자라는 중…');
+  cap($('rCap'),'다른 편에서 다른 블록체인이 나타납니다.  #103′부터 다르게 자란 체인…');
   lab.alt=[nb('103p',{alt:true,tag:"103′"}),nb('104p',{alt:true,tag:"104′"}),nb('105p',{alt:true,tag:"105′"}),nb('106p',{alt:true,tag:"106′"})];
   lab.alt.forEach(b=>{b.n='';});
   labDraw();
@@ -530,24 +572,30 @@ async function playReorg(){
   cap($('rCap'),'경쟁 가지가 더 무겁습니다(더 많은 지지) — 노드들이 갈아탑니다!','warn');
   lab.main.forEach((b,i)=>{if(i>=2)b.orphan=true});
   labDraw();
+  reorgStep(1,'bad','#103이 고아 블록이 되어 채택 체인에서 제외됨');
   await wait(1000); if(!labBusy)return;
   $('ejChip').classList.add('show'); $('poolNote').textContent='내 거래가 체인에서 떨어져 대기실로 돌아왔습니다';
-  cap($('rCap'),'내 블록 #103이 고아가 됐습니다. ✓까지 떴던 거래가 다시 txpool로 — 사라진 건 아닙니다.','bad');
+  reorgStep(2,'on','고아 블록의 거래가 txpool로 돌아오는 중…');
+  cap($('rCap'),'내 블록 #103이 고아가 됐습니다. ✓까지 떴던 거래가 다시 txpool로 돌아옵니다. 사라진 건 아닙니다.','bad');
   await wait(1600); if(!labBusy)return;
+  reorgStep(2,'done','내 거래가 txpool로 복귀 · 다시 포함 대기 ✓');
   lab.main=lab.main.slice(0,2).concat(lab.alt.map(b=>({...b,alt:false,n:'',orphan:false})));
   lab.alt=[]; labDraw();
   await wait(900); if(!labBusy)return;
+  reorgStep(3,'on','새 체인의 다음 블록에 재포함 중…');
   lab.main.push(nb('107',{mine:true,tag:'★ 재포함'})); lab.main[lab.main.length-1].n='';
   labDraw();
   $('ejChip').classList.remove('show'); $('poolNote').textContent='다음 블록에 다시 실렸습니다';
   lab.reorged=true;
-  cap($('rCap'),'새 체인의 다음 블록에 내 거래가 다시 포함됐습니다. 대개는 이렇게 복귀하지만 — “포함”이 확정이 아닌 이유를 봤습니다.','ok');
+  reorgStep(3,'done','새 체인의 다음 블록에 재포함 ✓ · 아직 확정 전');
+  cap($('rCap'),'새 체인의 다음 블록에 내 거래가 다시 포함됐습니다. 대개는 이렇게 복귀합니다. 이것이 “포함”이 확정이 아닌 이유입니다.','ok');
   labBusy=false;
 }
 async function playFinal(){
   if(labBusy)return;
   if(!lab.main.length){toast('먼저 ① 체인 성장을 실행하세요');return}
   labBusy=true;
+  reorgStep(3,'on','검증자 합의가 체크포인트를 확정하는 중…');
   cap($('rCap'),'검증자들의 합의가 체크포인트에 도달합니다…');
   const upto=Math.min(3,lab.main.length);
   for(let i=0;i<upto;i++){
@@ -555,10 +603,24 @@ async function playFinal(){
     await wait(500); if(!labBusy)return;
   }
   lab.locked=true;
-  cap($('rCap'),'🔒 finalized — 자물쇠가 채워진 블록들은 이제 어떤 경쟁 가지로도 교체되지 않습니다. 이 앞에서 reorg를 시도하면?','ok');
+  reorgStep(3,'done','체크포인트 finalized 🔒 · 이제 되돌릴 수 없음');
+  cap($('rCap'),'🔒 finalized — 위 채택 체인에 자물쇠가 채워졌습니다. 이제 아래에서 경쟁 가지가 reorg를 다시 시도합니다…','ok');
+  await wait(900); if(!labBusy)return;
+  lab.alt=[
+    nb('f103',{alt:true,tag:"103′"}),
+    nb('f104',{alt:true,tag:"104′"}),
+    nb('f105',{alt:true,tag:"105′"}),
+    nb('f106',{alt:true,tag:"106′"}),
+  ];
+  lab.alt.forEach(b=>{b.n=''}); labDraw();
+  $('poolNote').textContent='경쟁 가지가 finalized 경계를 넘으려는 중…';
+  cap($('rCap'),'경쟁 가지가 더 길어져도 finalized 경계를 되돌리려는 시도는 프로토콜이 받아들이지 않습니다…','warn');
   await wait(1200); if(!labBusy)return;
+  lab.alt.forEach(b=>b.blocked=true); labDraw();
+  $('altLane').classList.add('rejected');
   lab.main.slice(0,upto).forEach(b=>{const el=$('bk'+b.id);if(el){el.classList.add('denyfx');setTimeout(()=>el.classList.remove('denyfx'),600)}});
-  cap($('rCap'),'거부됩니다 — 프로토콜이 finalized 이전으로는 절대 돌아가지 않습니다. 이것이 inclusion과 finality의 차이.','ok');
+  $('poolNote').textContent='✕ reorg 거부 — finalized 채택 체인 유지';
+  cap($('rCap'),'시각적 비교 — 아래 경쟁 가지의 reorg 시도는 거부되고, 위의 finalized 채택 체인은 그대로 유지됩니다. 이것이 inclusion과 finality의 차이입니다.','ok');
   labBusy=false;
 }
 
@@ -575,7 +637,7 @@ function resetClocks(){
 }
 async function playClocks(){
   if(ckBusy)return; resetClocks(); ckBusy=true;
-  cap($('cCap'),'매수 버튼을 눌렀습니다 — 두 시계가 동시에 출발합니다.');
+  cap($('cCap'),'매수 버튼을 눌렀습니다.  두 시계가 동시에 출발합니다.');
   mile('m0',true); mile('n0',true);
   $('onMsg').textContent='거래 전송됨'; $('offMsg').textContent='매수 접수됨';
   $('cbOn').style.width='18%'; $('cbOff').style.width='8%';
@@ -594,7 +656,7 @@ async function playClocks(){
   mile('n2',true); $('cbOff').style.width='100%';
   $('offMsg').textContent='법적 장부 확정 — D+1 이후';
   qreveal('qz2',1);
-  cap($('cCap'),'법적 소유권은 하루 뒤에야 확정됐습니다. 온체인 finality ≠ 세상의 finality — RWA·STO 설계의 핵심 난제입니다.','ok');
+  cap($('cCap'),'법적 소유권은 하루 뒤에야 확정됐습니다. 온체인 finality ≠ 세상의 finality . RWA·STO 설계의 핵심 난제입니다.','ok');
   ckBusy=false;
 }
 
@@ -692,16 +754,6 @@ function downloadOutput(){
 }
 ['o1','o2'].forEach(k=>$(k).addEventListener('input',saveLocal));
 
-/* ---- 타이머 ---- */
-let tId=null,remain=180;
-function drawT(){
-  const t=$('timer');
-  t.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
-  t.className='timer'+(remain<=0?' over':remain<=30?' warn':'');
-}
-function startTimer(){if(tId)return;tId=setInterval(()=>{remain--;drawT();if(remain<=0){clearInterval(tId);tId=null;toast('3분 종료! 제출 버튼을 눌러 주세요.')}},1000)}
-function resetTimer(){clearInterval(tId);tId=null;remain=180;drawT()}
-
 /* ---- 네비게이션 ---- */
 const secs=[...document.querySelectorAll('section')];
 function cur(){let bi=0,bd=1e9;secs.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<bd){bd=d;bi=i}});return bi}
@@ -712,7 +764,7 @@ addEventListener('keydown',e=>{
   if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
 });
 addEventListener('scroll',()=>{$('progress').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'});
-drawT(); resetLife(); resetLab(); resetClocks(); judgeRender(); restoreLocal();
+resetLife(); resetLab(); resetClocks(); judgeRender(); restoreLocal();
 </script>
 </body>
 </html>

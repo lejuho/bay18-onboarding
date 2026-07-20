@@ -136,6 +136,13 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .vkey.stolen{background:#ffe3e9;outline:2px solid var(--red);animation:shake .5s}
 .verifychip{font-family:var(--mono);font-size:13px;font-weight:800;border-radius:10px;padding:11px 13px;background:#eef3fc;color:#5a6f95;transition:.4s}
 .verifychip.valid{background:#def7ea;color:#116340;outline:2px solid var(--green)}
+.attackcompare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.attackresult{padding:12px 14px;border-radius:var(--r-sm);background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink-dim);transition:.35s}
+.attackresult b{display:block;font-size:13.5px;margin-bottom:4px;color:inherit}
+.attackresult p{margin:0;font-size:12px;line-height:1.5;color:inherit}
+.attackresult.on{border-color:rgba(83,220,255,.55);background:rgba(83,220,255,.1);color:#dcebff}
+.attackresult.bad{border-color:rgba(255,109,136,.6);background:rgba(255,109,136,.1);color:#ffdbe2}
+.attackresult.done{border-color:rgba(79,223,156,.55);background:rgba(79,223,156,.1);color:#d7f7e6}
 
 /* ===== 활동3 · 회복 파이프라인 ===== */
 .pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
@@ -154,8 +161,14 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .schip.sel{outline:3px solid var(--cyan)}
 .schip.gone{opacity:0;pointer-events:none;transform:scale(.5)}
 .schip.no{animation:shake .45s;background:#ffe3e9;color:#8c2340}
-.sbuckets{display:flex;gap:8px;flex-wrap:wrap}
-.sbucket{flex:1 1 120px;background:rgba(255,255,255,.09);border:1px dashed var(--line);color:#dcebff;font-weight:800}
+.sbuckets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sbucket{min-width:0;min-height:92px;background:rgba(255,255,255,.09);border:1px dashed var(--line);color:#dcebff;font-weight:800;display:flex;flex-direction:column;align-items:stretch;gap:9px;text-align:left}
+.sbucket-title{text-align:center}
+.sbucket.hit{border-color:var(--green);background:rgba(79,223,156,.14);box-shadow:0 0 18px rgba(79,223,156,.18)}
+.saccepted{display:flex;flex-direction:column;gap:5px;min-height:24px}
+.saccepted:empty::before{content:"여기에 분류";display:block;text-align:center;color:var(--ink-dim);font-size:11px;font-weight:500}
+.saccepted-item{display:block;background:#def7ea;color:#116340;border-radius:7px;padding:6px 8px;font-size:11px;font-weight:700;line-height:1.35;animation:acceptedIn .3s ease-out}
+@keyframes acceptedIn{from{opacity:0;transform:translateY(-5px) scale(.96)}to{opacity:1;transform:none}}
 
 /* ===== 정리 ===== */
 .oneline{margin-top:22px;text-align:center;font-size:clamp(17px,2.2vw,22px);color:#eaf2ff;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px}
@@ -192,10 +205,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .stn p{font-size:14.5px;color:var(--ink-dim);margin:0;line-height:1.55}
 
 /* ===== 산출물 ===== */
-.outgrid{display:grid;grid-template-columns:minmax(220px,.8fr) 2fr;gap:20px;align-items:start}
-.timerbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;text-align:center}
-.timer{font-family:var(--mono);font-size:clamp(52px,6vw,76px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.timer.warn{color:var(--amber)} .timer.over{color:var(--red)}
+.outgrid{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
 .flowform{display:grid;grid-template-columns:1fr;gap:10px}
 .fcell{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px}
 .fcell label{font-size:13px;font-weight:800;color:#3d5885;display:flex;align-items:center;gap:6px}
@@ -215,8 +225,9 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 
 @media (max-width:920px){
   .lenses{grid-template-columns:1fr}
-  .ronin,.twolines,.outgrid{grid-template-columns:1fr}
+  .ronin,.attackcompare,.twolines,.outgrid{grid-template-columns:1fr}
   .pipe{grid-template-columns:repeat(2,1fr)}
+  .sbuckets{grid-template-columns:repeat(2,1fr)}
   .rail3{grid-template-columns:1fr;gap:18px}
   .rail3::before{left:24px;right:auto;top:0;bottom:0;width:3px;height:auto;background:linear-gradient(180deg,#3a5d94,var(--cyan),#3a5d94)}
   .stn{text-align:left;padding:0 0 0 56px}
@@ -244,9 +255,9 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">W6</span> BAY 18기 온보딩 · 2교시 · 마지막 주 <span class="min">30 MIN</span></div>
-    <div class="lastweek">5주간 — 지갑 → 검증 → 실행 → 기록 → 확정, <b>지도</b>가 완성됐다</div>
+    <div class="lastweek">5주동안 지갑 → 검증 → 실행 → 기록 → 확정까지 살펴봤습니다.</div>
     <h1>이제 그 지도에서<br><em class="rd">부러질 수 있는 곳</em>을 찾는다</h1>
-    <p class="lead">스마트 컨트랙트 보안을 넘어선 <b>시스템적 복원력</b> — 취약점의 존재보다 <b>피해가 커지는 경로</b>를 보고, 예방을 넘어 <b>탐지·차단·복구</b>까지 설계하는 눈을 만듭니다.</p>
+    <p class="lead">스마트 컨트랙트 보안을 넘어선 <b>시스템적 복원력</b> — 취약점의 존재보다 <b>피해가 커지는 경로</b>를 보고, 예방을 넘어 <b>탐지·차단·복구</b>의 필요성을 살펴봅시다.</p>
     <div class="formula">
       <span class="st">위험 =</span><span class="rd">권한</span><span class="ar">·</span><span class="rd">자금 흐름</span><span class="ar">·</span><span class="rd">외부 의존성</span>
       <span class="ar">→</span><span class="st">회복 =</span><span class="hot">예방·탐지·차단·복구</span>
@@ -263,8 +274,8 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <!-- 2 · 활동1: 지도 회수 -->
 <section>
   <div class="wrap">
-    <div class="eyebrow"><span class="wk">활동 1</span> 나의 생애주기 지도 <span class="min">~4'</span></div>
-    <h2>5주의 산출물이 <em>오늘의 재료</em>다</h2>
+    <div class="eyebrow"><span class="wk">활동 1</span> 5주간의 지도 <span class="min">~4'</span></div>
+    <h2>5주의 내용이 <em>오늘의 기반</em></h2>
     <div class="stage">
       <div class="recap" id="recap"></div>
       <div class="caption" id="mapCap">각 단계 옆에 여러분이 직접 쓴 문장이 보입니다. 이제 “위험 오버레이”를 켜 보세요.</div>
@@ -272,7 +283,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <button class="btn-red" onclick="overlayOn()">위험 오버레이 켜기</button>
         <a class="btn-ghost" href="assemble.html" style="text-decoration:none;display:inline-flex;align-items:center;padding:12px 18px;border-radius:12px;font-weight:700;font-size:15px">🗺️ 전체 지도 페이지 열기</a>
       </div>
-      <p class="keynote">여러분이 배운 생애주기의 <b>모든 정거장이 곧 공격 표면</b>입니다 — 키가 있는 곳(권한), 돈이 모이는 곳(자금), 바깥을 믿는 곳(외부 의존성).</p>
+      <p class="keynote">여러분이 배운 생애주기의 <b>모든 정거장이 곧 공격 표면</b>입니다. 키가 있는 곳(권한), 돈이 모이는 곳(자금), 바깥을 믿는 곳(외부 의존성).</p>
     </div>
   </div>
 </section>
@@ -280,7 +291,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <!-- 3 · 활동2: 세 렌즈 + Ronin -->
 <section>
   <div class="wrap">
-    <div class="eyebrow"><span class="wk">활동 2</span> 세 개의 렌즈 · Ronin Bridge <span class="min">~7'</span></div>
+    <div class="eyebrow"><span class="wk">활동 2</span> 세 가지 표면 · Ronin Bridge <span class="min">~7'</span></div>
     <h2>규칙상 유효한 거래가 <em class="rd">6억 달러를 훔쳤다</em></h2>
     <div class="stage">
       <div class="lenses">
@@ -299,7 +310,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       <div class="ronin" style="margin-top:18px">
         <div class="vaultcard">
           <h4>🏦 브리지 금고 (자금 흐름)</h4>
-          <div class="sub">173,600 ETH + 25.5M USDC — 단일 컨트랙트에 집중</div>
+          <div class="sub">173,600 ETH + 25.5M USDC의 자금이 <b>단일 컨트랙트에 집중되어 있었습니다.</b></div>
           <div class="vaultbarwrap"><div class="vaultbar" id="vbar"></div></div>
           <div class="vaultamt" id="vamt">173,600 ETH</div>
           <div class="brk" id="brk">⛔ CIRCUIT BREAKER — 일일 출금 한도 도달, 차단</div>
@@ -311,13 +322,17 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
           <div class="verifychip" id="vchip">verifySignature( … ) → 대기</div>
         </div>
       </div>
-      <div class="caption" id="roCap">공격을 재생해 보세요 — 어떤 관문도 울리지 않습니다.</div>
+      <div class="attackcompare">
+        <div class="attackresult" id="attackActual"><b>2022년 실제 상황</b><p>아직 실행하지 않았습니다.</p></div>
+        <div class="attackresult" id="attackProtected"><b>회복 장치 적용 후</b><p>아직 실행하지 않았습니다.</p></div>
+      </div>
+      <div class="caption" id="roCap">공격을 재생해 보세요. 어떤 관문도 울리지 않습니다.</div>
       <div class="btnrow">
         <button class="btn-red" onclick="playAttack(false)">공격 재생 (2022년 실제 상황)</button>
         <button class="btn-green" onclick="playAttack(true)">회복 장치 장착 후 재생</button>
         <button class="btn-ghost" onclick="resetRonin()">초기화</button>
       </div>
-      <p class="keynote"><b>규칙상 유효한 거래 ≠ 경제적으로 정당한 거래.</b> 서명은 진짜였고(탈취된 키로 만든), nonce도 잔액도 문제없었습니다. 프로토콜의 관문은 “누가 서명했나”를 물을 뿐, “이 서명이 정당한가”는 묻지 못합니다 — 그래서 세 렌즈가 필요합니다.</p>
+      <p class="keynote"><b>규칙상 유효한 거래 ≠ 경제적으로 정당한 거래.</b> 서명은 진짜였고(탈취된 키로 만든), nonce도 잔액도 문제없었습니다. 프로토콜의 관문은 “누가 서명했나”를 물을 뿐, “이 서명이 정당한가”는 확인하지 못합니다. 그래서 세 가지, <b>권한 / 자금 흐름 / 외부 의존성</b>에 주목해야 합니다.</p>
     </div>
   </div>
 </section>
@@ -334,14 +349,14 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <div class="pstage"><div class="ic">⛔</div><b>차단</b><p>Pause · 출금 한도(Rate Limit)</p></div>
         <div class="pstage"><div class="ic">🩹</div><b>복구</b><p>보전 · 마이그레이션 · 공시</p></div>
       </div>
-      <div class="caption" id="pCap">Ronin은 사고 후 외부 감사 3회, circuit breaker와 일일 5천만 달러 출금 한도를 도입했고, 사용자 자산을 1:1 전액 보전한 뒤 브리지를 재개했습니다 — 네 단계가 전부 등장한 사례.</div>
+      <div class="caption" id="pCap">Ronin은 사고 후 외부 감사 3회, circuit breaker와 일일 5천만 달러 출금 한도를 도입했고, 사용자 자산을 1:1 전액 보전한 뒤 브리지를 재개했습니다. 네 단계가 전부 등장한 사례입니다.</div>
       <div class="sortlbl">게임 · 이 조치는 어느 단계일까? — 조치를 누르고, 맞는 단계를 누르세요 <span class="sortscore" id="sscore">0 / 8</span></div>
       <div class="schips" id="schips"></div>
       <div class="sbuckets">
-        <button class="sbucket" onclick="sTry(0)">🛡️ 예방</button>
-        <button class="sbucket" onclick="sTry(1)">📡 탐지</button>
-        <button class="sbucket" onclick="sTry(2)">⛔ 차단</button>
-        <button class="sbucket" onclick="sTry(3)">🩹 복구</button>
+        <button class="sbucket" id="sbucket0" onclick="sTry(0)"><span class="sbucket-title">🛡️ 예방</span><span class="saccepted" id="saccepted0"></span></button>
+        <button class="sbucket" id="sbucket1" onclick="sTry(1)"><span class="sbucket-title">📡 탐지</span><span class="saccepted" id="saccepted1"></span></button>
+        <button class="sbucket" id="sbucket2" onclick="sTry(2)"><span class="sbucket-title">⛔ 차단</span><span class="saccepted" id="saccepted2"></span></button>
+        <button class="sbucket" id="sbucket3" onclick="sTry(3)"><span class="sbucket-title">🩹 복구</span><span class="saccepted" id="saccepted3"></span></button>
       </div>
     </div>
   </div>
@@ -383,7 +398,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       </div>
     </div>
     <div class="lq">
-      <div class="lbl">게임 · 렌즈 대기 — 각 상황에서 가장 먼저 들이댈 렌즈는? <span class="lqscore" id="lqscore">0 / 4</span></div>
+      <div class="lbl">검사 측면 — 각 상황에서 중요하게 검사해야 할 부분은? <span class="lqscore" id="lqscore">0 / 4</span></div>
       <div id="lqlist"></div>
     </div>
   </div>
@@ -395,24 +410,16 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
     <div class="eyebrow"><span class="wk">산출물</span> 마지막 3분 <span class="min">3'</span></div>
     <h2>프로젝트 하나를 골라 <em>위험과 회복</em>을 적는다</h2>
     <div class="outgrid">
-      <div class="timerbox">
-        <div class="timer" id="timer">03:00</div>
-        <div class="btnrow" style="justify-content:center">
-          <button onclick="startTimer()">시작</button>
-          <button class="btn-ghost" onclick="resetTimer()">리셋</button>
-        </div>
-        <p class="dim" style="font-size:14px;margin-top:14px">이 문장으로 6주의 지도가 완성됩니다. 제출 후 지도 페이지에서 전체를 확인하세요.</p>
-      </div>
       <div class="flowform">
-        <div class="fcell"><label><i>위험</i>고른 프로젝트에서 가장 큰 위험 — 어떤 렌즈, 어디서 발생, 누구에게 영향 (한 문장)</label><textarea id="o1" placeholder="예: [브리지 X] 자금 흐름 렌즈 — 전체 담보가 단일 컨트랙트에 잠겨 있어, 소수 승인 키가 뚫리면 모든 예치자의 자산이 한 번에 유출된다."></textarea></div>
-        <div class="fcell"><label><i>회복</i>내가 붙일 회복 장치 하나 — 예방·탐지·차단·복구 중 (한 문장)</label><textarea id="o2" placeholder="예: 차단 — 일일 출금 한도와 대규모 출금 시 자동 pause를 걸어, 뚫려도 피해가 하루치로 제한되게 한다."></textarea></div>
+        <div class="fcell"><label><i>위험</i>고른 프로젝트에서 가장 큰 위험이 어디서 발생, 누구에게 영향을 주는지 (한 문장)</label><textarea id="o1" placeholder=""></textarea></div>
+        <div class="fcell"><label><i>회복</i>내가 붙일 회복 장치 하나 — 예방·탐지·차단·복구 중 (한 문장)</label><textarea id="o2" placeholder=""></textarea></div>
         <div>
           <div class="btnrow" style="margin-top:0">
             <button onclick="submitForm()">구글폼으로 제출</button>
             <button class="btn-ghost" onclick="copyOutput()">복사</button>
             <button class="btn-ghost" onclick="downloadOutput()">TXT 백업</button>
           </div>
-          <a class="finishlink" href="assemble.html">🎓 제출했다면 — 나의 트랜잭션 생애주기 지도 완성본 보러 가기 →</a>
+          <a class="finishlink" href="assemble.html">🎓 제출했다면 — 나의 온보딩 지도 완성본 보러 가기 →</a>
         </div>
       </div>
     </div>
@@ -482,7 +489,7 @@ async function overlayOn(){
     if(!st.risk)continue;
     const el=$('rk'+st.w); if(el){el.classList.add('show');await wait(600)}
   }
-  cap($('mapCap'),'배움의 지도 = 공격 표면의 지도. 오늘은 이 표시들을 읽는 세 개의 렌즈를 배웁니다.','warn');
+  cap($('mapCap'),'배움의 지도 = 공격 표면의 지도. 오늘은 이 표시들을 세 가지 측면에서 살펴봅니다.','warn');
 }
 
 /* ---- 활동2 · Ronin ---- */
@@ -490,25 +497,35 @@ let roBusy=false;
 function drawKeys(stolen){
   $('keys').innerHTML=Array.from({length:9},(_,i)=>`<div class="vkey ${i<stolen?'stolen':''}" >🔑</div>`).join('');
 }
-function resetRonin(){
+function attackResult(protectedMode,state,text){
+  const el=$(protectedMode?'attackProtected':'attackActual');
+  el.className='attackresult'+(state?' '+state:''); el.querySelector('p').textContent=text;
+}
+function resetRonin(clearResults=true){
   roBusy=false;
   drawKeys(0);
   $('vbar').style.width='100%'; $('vbar').className='vaultbar';
   $('vamt').textContent='173,600 ETH'; $('vamt').className='vaultamt';
   $('brk').classList.remove('show');
   $('vchip').textContent='verifySignature( … ) → 대기'; $('vchip').className='verifychip';
+  if(clearResults){
+    attackResult(false,'','아직 실행하지 않았습니다.');
+    attackResult(true,'','아직 실행하지 않았습니다.');
+  }
   qreset('qz1');
-  cap($('roCap'),'공격을 재생해 보세요 — 어떤 관문도 울리지 않습니다.');
+  cap($('roCap'),'공격을 재생해 보세요. 어떤 관문도 울리지 않습니다.');
 }
 async function playAttack(protectedMode){
-  if(roBusy)return; resetRonin(); roBusy=true;
-  cap($('roCap'),'공격자가 검증자 키를 하나씩 확보합니다 — 5개면 충분합니다 (권한 + 키 관리라는 외부 의존)…');
+  if(roBusy)return; resetRonin(false); roBusy=true;
+  attackResult(protectedMode,'on','검증자 키를 확보하는 중…');
+  cap($('roCap'),'공격자가 검증자 키를 하나씩 확보합니다.  5개면 충분합니다 (권한 + 키 관리라는 외부 의존)…');
   for(let i=1;i<=5;i++){drawKeys(i);await wait(430);if(!roBusy)return}
   await wait(500); if(!roBusy)return;
   $('vchip').textContent='verifySignature( … ) → Valid ✓ (규칙상 유효)';
   $('vchip').className='verifychip valid';
+  attackResult(protectedMode,'on','키 5개 탈취 → 5/9 서명 검증 통과 ✓');
   qreveal('qz1',1);
-  cap($('roCap'),'서명 검증 통과 — 탈취된 키로 만든 서명도 “진짜 서명”입니다. 2주차의 관문은 초록불을 켭니다.','warn');
+  cap($('roCap'),'서명 검증 통과 — 탈취된 키로 만든 서명도 “진짜 서명”입니다. txpool 이전 검증 결과는 정상입니다.','warn');
   await wait(1300); if(!roBusy)return;
   cap($('roCap'),'금고가 비워지기 시작합니다…','bad');
   const total=173600;
@@ -528,10 +545,12 @@ async function playAttack(protectedMode){
   if(protectedMode){
     $('brk').classList.add('show');
     $('vamt').textContent=Math.round(total*limit/100).toLocaleString()+' ETH 보전';
-    cap($('roCap'),'⛔ 차단 — 일일 출금 한도(circuit breaker)가 작동해 유출이 하루치에서 멈췄습니다. 그리고 🩹 복구 — 공시·보전·재개 절차가 시작됩니다. 같은 공격, 다른 결말.','ok');
+    attackResult(true,'done','키 탈취 → 서명 통과 → 이상 출금 탐지 → circuit breaker 차단 → 149,296 ETH 보전');
+    cap($('roCap'),'⛔ 차단 — 일일 출금 한도(circuit breaker)가 작동해 유출이 하루치에서 멈췄습니다. 그리고 🩹 복구 — 공시·보전·재개 절차가 시작됩니다. 같은 공격 방식임에도 다른 결과가 됩니다.','ok');
   }else{
     $('vamt').textContent='0 ETH'; $('vamt').className='vaultamt red';
-    cap($('roCap'),'전액 유출 — 블록체인은 한 순간도 멈추지 않았고, 모든 관문은 통과됐습니다. 실제 2022년, 며칠 뒤에야 발견됐습니다.','bad');
+    attackResult(false,'bad','키 탈취 → 서명 통과 → 검증 경보 없음 → 173,600 ETH 전액 유출 · 탐지 지연');
+    cap($('roCap'),'전액 유출 — 블록체인은 한 순간도 멈추지 않았고, 모든 관문은 통과됐습니다. 실제로도 며칠 뒤에야 발견됐습니다.','bad');
   }
   roBusy=false;
 }
@@ -550,6 +569,7 @@ const SITEMS=[
 let sSel=null,sDone=0;
 function sortReset(){
   sSel=null; sDone=0; $('sscore').textContent='0 / 8';
+  for(let i=0;i<4;i++){$('saccepted'+i).innerHTML='';$('sbucket'+i).classList.remove('hit')}
   const sh=SITEMS.map((_,i)=>i).sort(()=>Math.random()-.5);
   $('schips').innerHTML=sh.map(i=>`<button class="schip" data-i="${i}" onclick="sPick(this)">${SITEMS[i][0]}</button>`).join('');
 }
@@ -562,7 +582,13 @@ function sTry(bucket){
   if(!sSel){toast('조치를 먼저 선택하세요');return}
   const i=+sSel.dataset.i;
   if(SITEMS[i][1]===bucket){
-    sSel.classList.add('gone'); sSel=null;
+    const selected=sSel;
+    const placed=document.createElement('span');
+    placed.className='saccepted-item'; placed.textContent='✓ '+SITEMS[i][0];
+    $('saccepted'+bucket).appendChild(placed);
+    const target=$('sbucket'+bucket); target.classList.add('hit');
+    setTimeout(()=>target.classList.remove('hit'),500);
+    selected.classList.add('gone'); setTimeout(()=>selected.remove(),250); sSel=null;
     sDone++; $('sscore').textContent=sDone+' / 8';
     if(sDone===8)toast('완료! 여러분은 이제 사고 대응 설계도를 읽을 수 있습니다.');
   }else{
@@ -572,10 +598,10 @@ function sTry(bucket){
 
 /* ---- 렌즈 퀴즈 ---- */
 const LQ=[
-  ['AI 네트워크 — 채굴자의 결과물 “품질”을 평가해 보상을 정하는 Validator가 있다','권한','품질 평가자가 곧 돈의 분배를 결정합니다 — 누가, 어떤 견제 아래 평가하는가부터 물어야 합니다.'],
-  ['DeFi 브리지 — 여러 체인의 자산 수억 달러가 하나의 컨트랙트에 담보로 잠겨 있다','자금 흐름','돈이 한곳에 모일수록 뚫렸을 때의 피해가 커집니다 — Ronin의 구조가 정확히 이것이었습니다.'],
-  ['예측시장 — “이 경기의 승자는 누구인가”라는 현실 사건의 최종 결과를 판정해야 한다','외부 의존성','온체인은 결과를 기록할 뿐, 판정은 UMA 같은 외부 오라클에 의존합니다 — 그 오라클을 믿는가?'],
-  ['사이드체인 브리지 — 검증자 9명 중 5명 서명이면 전체 자산을 이동시킬 수 있다','권한','소수의 승인 키가 전체 자산의 운명을 쥡니다 — 임계값과 키 관리가 곧 시스템의 목숨입니다.'],
+  ['AI 네트워크 — 채굴자의 결과물 “품질”을 평가해 보상을 정하는 Validator가 있다','권한','품질 평가자가 곧 돈의 분배를 결정합니다. 누가, 어떤 견제 아래 평가하는가부터 물어야 합니다.'],
+  ['DeFi 브리지 — 여러 체인의 자산 수억 달러가 하나의 컨트랙트에 담보로 잠겨 있다','자금 흐름','돈이 한곳에 모일수록 뚫렸을 때의 피해가 커집니다. Ronin의 구조가 정확히 이것이었습니다.'],
+  ['예측시장 — “이 경기의 승자는 누구인가”라는 현실 사건의 최종 결과를 판정해야 한다','외부 의존성','온체인은 결과를 기록할 뿐, 판정은 UMA 같은 외부 오라클에 의존합니다. 그 오라클을 어떻게 의존하는지를 봐야 합니다.'],
+  ['사이드체인 브리지 — 검증자 9명 중 5명 서명이면 전체 자산을 이동시킬 수 있다','권한','소수의 승인 키가 전체 자산의 운명을 쥡니다. 임계값과 키 관리가 곧 시스템의 목숨입니다.'],
 ];
 const LENSNAMES=['권한','자금 흐름','외부 의존성'];
 let lqDone=0,lqRight=0;
@@ -600,7 +626,7 @@ function lqPick(i,val,btn){
   if(val===correct)lqRight++;
   lqDone++; $('lqscore').textContent=lqRight+' / 4';
   const e=$('lqe'+i);
-  e.textContent=(val===correct?'좋은 렌즈 — ':'첫 렌즈로는 '+correct+' — ')+LQ[i][2]+' (렌즈는 겹칠 수 있습니다. “가장 먼저”가 포인트.)';
+  e.textContent=(val===correct?'좋은 시각 — ':'첫 렌즈로는 '+correct+' — ')+LQ[i][2]+' (위험은 여러개가 동시에 존재할 수 있습니다. “가장 먼저”가 포인트.)';
   e.classList.add('show');
   if(lqDone===4)toast('완료! 어떤 프로젝트든 이 세 질문부터 시작하세요.');
 }
@@ -664,16 +690,6 @@ function downloadOutput(){
 }
 ['o1','o2'].forEach(k=>$(k).addEventListener('input',saveLocal));
 
-/* ---- 타이머 ---- */
-let tId=null,remain=180;
-function drawT(){
-  const t=$('timer');
-  t.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
-  t.className='timer'+(remain<=0?' over':remain<=30?' warn':'');
-}
-function startTimer(){if(tId)return;tId=setInterval(()=>{remain--;drawT();if(remain<=0){clearInterval(tId);tId=null;toast('3분 종료! 제출 버튼을 눌러 주세요.')}},1000)}
-function resetTimer(){clearInterval(tId);tId=null;remain=180;drawT()}
-
 /* ---- 네비게이션 ---- */
 const secs=[...document.querySelectorAll('section')];
 function cur(){let bi=0,bd=1e9;secs.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<bd){bd=d;bi=i}});return bi}
@@ -684,7 +700,7 @@ addEventListener('keydown',e=>{
   if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
 });
 addEventListener('scroll',()=>{$('progress').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'});
-drawT(); drawRecap(); resetRonin(); sortReset(); lqRender(); restoreLocal();
+drawRecap(); resetRonin(); sortReset(); lqRender(); restoreLocal();
 </script>
 </body>
 </html>

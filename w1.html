@@ -96,11 +96,15 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
   background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:14px;color:var(--ink-dim);transition:.35s}
 .step i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;
   background:rgba(255,255,255,.12);flex:0 0 auto}
+.step span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.step b{font-size:14px;color:inherit}
+.step small{font-size:11.5px;line-height:1.4;color:var(--ink-dim);font-weight:500}
+.step.on small,.step.done small,.step.fail small{color:inherit}
 .step.on{background:rgba(75,140,255,.2);border-color:rgba(75,140,255,.5);color:#dcebff}
 .step.done{background:rgba(79,223,156,.16);border-color:rgba(79,223,156,.5);color:#d7f7e6}
-.step.done i{background:var(--green);color:#04321c}.step.done i::before{content:"✓"}
+.step.done i{background:var(--green);color:#04321c;font-size:0}.step.done i::before{content:"✓";font-size:12px}
 .step.fail{background:rgba(255,109,136,.16);border-color:rgba(255,109,136,.55);color:#ffdbe2}
-.step.fail i{background:var(--red);color:#fff}.step.fail i::before{content:"✕"}
+.step.fail i{background:var(--red);color:#fff;font-size:0}.step.fail i::before{content:"✕";font-size:12px}
 
 /* ===== 순서 분기 (미니 상태판 2개) ===== */
 .orderwrap{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(10px,2vw,22px);align-items:stretch}
@@ -171,10 +175,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .gpart.today{border-style:solid;border-color:var(--cyan);background:rgba(83,220,255,.1);color:#dff6ff}
 
 /* ===== 산출물 ===== */
-.outgrid{display:grid;grid-template-columns:minmax(220px,.8fr) 2fr;gap:20px;align-items:start}
-.timerbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;text-align:center}
-.timer{font-family:var(--mono);font-size:clamp(52px,6vw,76px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.timer.warn{color:var(--amber)} .timer.over{color:var(--red)}
+.outgrid{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
 .flowform{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch}
 .fcell{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px}
 .fcell label{font-size:13px;font-weight:800;color:#3d5885;display:flex;align-items:center;gap:6px}
@@ -260,7 +261,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
   <div class="wrap">
     <div class="eyebrow"><span class="wk">W1</span> BAY 18기 온보딩 · 2교시 <span class="min">30 MIN</span></div>
     <h1>블록체인은<br><em>상태를 바꾸는 기계</em>다</h1>
-    <p class="lead">계좌 잔액도, 토큰 보유량도 전부 하나의 <b>상태</b>입니다. 오늘은 트랜잭션이 그 상태를 어떻게 바꾸고, 왜 모든 노드가 같은 결과에 도달해야 하는지를 <b>움직이는 그림</b>으로 봅니다.</p>
+    <p class="lead">계좌 잔액도, 토큰 보유량도 전부 하나의 <b>상태</b>입니다. 오늘은 트랜잭션이 그 상태를 어떻게 바꾸고, 왜 모든 노드가 같은 결과에 도달해야 하는지를 봅니다.</p>
     <div class="formula"><span class="s0">State₀</span><span class="ar">+</span><span class="tx">TX</span><span class="ar">→</span><span class="s1">State₁</span></div>
     <div class="agenda">
       <div class="ag1"><b>2'</b>OT 연결</div>
@@ -294,9 +295,9 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         </div>
       </div>
       <div class="steps">
-        <div class="step" id="st1"><i>1</i>요청 생성</div>
-        <div class="step" id="st2"><i>2</i>규칙 검사</div>
-        <div class="step" id="st3"><i>3</i>상태 반영</div>
+        <div class="step" id="st1"><i>1</i><span><b>요청 생성</b><small>보낸 사람·받는 사람·금액을 담는다</small></span></div>
+        <div class="step" id="st2"><i>2</i><span><b>규칙 검사</b><small>현재 상태로 실행 가능한지 확인한다</small></span></div>
+        <div class="step" id="st3"><i>3</i><span><b>상태 반영</b><small>통과한 요청만 새 상태에 반영한다</small></span></div>
       </div>
       <div class="caption" id="txCap">버튼을 누르면 “Alice → Bob, 3” 요청이 상태판을 실제로 바꾸는 과정을 봅니다.</div>
       <div class="btnrow">
@@ -349,7 +350,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         </div>
       </div>
       <div class="quiz" id="qz1">
-        <div class="q">실행 전 예측 — 두 노드의 최종 상태는 어떻게 될까요? (손 들어 주세요)</div>
+        <div class="q">실행 전 예측 — 두 노드의 최종 상태는 어떻게 될까요?</div>
         <div class="qopts">
           <button class="qopt" onclick="qpick('qz1',0)">둘 다 같은 상태가 된다</button>
           <button class="qopt" onclick="qpick('qz1',1)">서로 다른 상태가 된다</button>
@@ -459,7 +460,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       </div>
     </div>
     <div class="match" id="match">
-      <div class="lbl">게임 · 부품 ↔ 역할 짝짓기 — 부품을 누른 뒤, 맞는 역할을 누르세요 <span class="mscore" id="mscore">0 / 5</span></div>
+      <div class="lbl">부품 ↔ 역할 짝짓기 — 부품을 누른 뒤, 맞는 역할을 누르세요 <span class="mscore" id="mscore">0 / 5</span></div>
       <div class="mparts" id="mparts"></div>
       <div class="mroles" id="mroles"></div>
       <div class="btnrow"><button class="btn-ghost" onclick="matchReset()">다시 섞기</button></div>
@@ -473,28 +474,20 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
     <div class="eyebrow"><span class="wk">산출물</span> 나의 상태 머신 한 장 <span class="min">3'</span></div>
     <h2>일상 사례 하나를 <em>화살표로</em> 정리하세요</h2>
     <div class="outgrid">
-      <div class="timerbox">
-        <div class="timer" id="timer">03:00</div>
-        <div class="btnrow" style="justify-content:center">
-          <button onclick="startTimer()">시작</button>
-          <button class="btn-ghost" onclick="resetTimer()">리셋</button>
-        </div>
-        <p class="dim" style="font-size:14px;margin-top:14px">이 한 장이 6주차 종합 지도에 그대로 쌓입니다.</p>
-      </div>
       <div class="flowform">
-        <div class="fcell"><label><i>S₀</i>현재 상태</label><textarea id="o1" placeholder="예: 내 포인트 10점"></textarea></div>
+        <div class="fcell"><label><i>S₀</i>현재 상태</label><textarea id="o1" placeholder=""></textarea></div>
         <div class="farrow">→</div>
-        <div class="fcell"><label><i>TX</i>트랜잭션</label><textarea id="o2" placeholder="예: 상품 구매 −3점"></textarea></div>
+        <div class="fcell"><label><i>TX</i>트랜잭션</label><textarea id="o2" placeholder=""></textarea></div>
         <div class="farrow">→</div>
-        <div class="fcell"><label><i>S₁</i>새 상태</label><textarea id="o3" placeholder="예: 포인트 7점"></textarea></div>
-        <div class="fcell fwide"><label><i>!</i>순서가 바뀌면 생길 문제</label><textarea id="o4" placeholder="예: 같은 잔액을 노리는 두 결제가 있으면 먼저 처리된 쪽에 따라 결과가 달라진다."></textarea></div>
+        <div class="fcell"><label><i>S₁</i>새 상태</label><textarea id="o3" placeholder=""></textarea></div>
+        <div class="fcell fwide"><label><i>!</i>순서가 바뀌면 생길 문제</label><textarea id="o4" placeholder=""></textarea></div>
         <div class="fwide">
           <div class="btnrow" style="margin-top:0">
             <button onclick="submitForm()">구글폼으로 제출</button>
             <button class="btn-ghost" onclick="copyOutput()">복사</button>
             <button class="btn-ghost" onclick="downloadOutput()">TXT 백업</button>
           </div>
-          <p class="dim" style="font-size:13.5px;margin-top:10px">작성 내용은 이 브라우저에 자동 저장되어, 조립 페이지에서 나만의 “트랜잭션 생애주기 지도”로 합쳐집니다. 제출된 답 중 몇 개는 다음 주 도입 2분에서 소개됩니다.</p>
+          <p class="dim" style="font-size:13.5px;margin-top:10px"></p>
         </div>
       </div>
     </div>
@@ -514,7 +507,13 @@ function setBal(bar,num,v,dir){bar.style.height=H(v);num.textContent=v;num.class
 
 /* ---- 활동 1 ---- */
 let txBusy=false;
-function stepsReset(){['st1','st2','st3'].forEach(i=>$(i).className='step')}
+const STEP_BASE=[
+  '보낸 사람·받는 사람·금액을 담는다',
+  '현재 상태로 실행 가능한지 확인한다',
+  '통과한 요청만 새 상태에 반영한다',
+];
+function stepText(id,text){$(id).querySelector('small').textContent=text}
+function stepsReset(){['st1','st2','st3'].forEach((id,i)=>{$(id).className='step';stepText(id,STEP_BASE[i])})}
 function resetTx(){
   txBusy=false; stepsReset();
   $('chip').className='chip'; $('chip').innerHTML='TX<br>−3→';
@@ -525,31 +524,41 @@ function resetTx(){
 async function playTx(){
   if(txBusy)return; resetTx(); txBusy=true;
   $('st1').className='step on';
+  stepText('st1','Alice → Bob · 3 보내기 요청 작성 중');
   cap($('txCap'),'① Alice가 “Bob에게 3 보내기” 요청서를 만든다.');
   await wait(800); if(!txBusy)return;
+  stepText('st1','Alice → Bob · 3 요청 생성 ✓');
   $('st1').className='step done'; $('st2').className='step on';
+  stepText('st2','잔액 10 ≥ 3 확인 중');
   $('chip').classList.add('mid');
   cap($('txCap'),'② 규칙 검사 — 잔액 10 ≥ 3, 통과.');
   await wait(1100); if(!txBusy)return;
+  stepText('st2','잔액 10 ≥ 3 · 통과 ✓');
   $('st2').className='step done'; $('st3').className='step on';
+  stepText('st3','Alice와 Bob의 새 잔액 계산 중');
   $('chip').classList.remove('mid'); $('chip').classList.add('go');
   await wait(1100); if(!txBusy)return;
   setBal($('barA'),$('numA'),7,'down'); $('barB').classList.add('grow'); setBal($('barB'),$('numB'),5,'up');
   $('st3').className='step done';
-  cap($('txCap'),'③ 상태 반영 — Alice 7 · Bob 5. 요청이 상태를 바꿨다. 이것이 트랜잭션이다.','ok');
+  stepText('st3','Alice 7 · Bob 5로 상태 반영 ✓');
+  cap($('txCap'),'③ 상태 반영 — Alice 7 · Bob 5. 요청이 상태를 바꿨습니다. 이것이 트랜잭션입니다.','ok');
   txBusy=false;
 }
 async function playBadTx(){
   if(txBusy)return; resetTx(); txBusy=true;
   $('chip').innerHTML='TX<br>−13→';
   $('st1').className='step on';
+  stepText('st1','Alice → Bob · 13 보내기 요청 작성 중');
   cap($('txCap'),'① Alice가 “Bob에게 13 보내기”를 요청한다.');
   await wait(800); if(!txBusy)return;
+  stepText('st1','Alice → Bob · 13 요청 생성 ✓');
   $('st1').className='step done'; $('st2').className='step on';
+  stepText('st2','잔액 10 ≥ 13인지 확인 중');
   $('chip').classList.add('mid');
   await wait(900); if(!txBusy)return;
   $('st2').className='step fail'; $('chip').classList.add('rejected');
-  cap($('txCap'),'② 규칙 검사 실패 — 잔액 10으로는 13을 보낼 수 없다. 상태판은 그대로다.','bad');
+  stepText('st2','잔액 10 < 13 · 거절 ✕');
+  cap($('txCap'),'② 규칙 검사 실패 — 잔액 10으로는 13을 보낼 수 없습니다. 상태는 그대로 유지됩니다.','bad');
   txBusy=false;
 }
 
@@ -561,21 +570,28 @@ async function sendCustom(){
   txBusy=true; stepsReset();
   $('chip').className='chip'; $('chip').innerHTML=`TX<br>−${amt}→`;
   $('st1').className='step on';
-  cap($('txCap'),`① Alice가 “Bob에게 ${amt} 보내기” 요청서를 만든다. (현재 Alice ${a})`);
+  stepText('st1',`Alice → Bob · ${amt} 보내기 요청 작성 중`);
+  cap($('txCap'),`① Alice가 “Bob에게 ${amt} 보내기” 요청서를 만듭니다. (현재 Alice ${a})`);
   await wait(700); if(!txBusy)return;
+  stepText('st1',`Alice → Bob · ${amt} 요청 생성 ✓`);
   $('st1').className='step done'; $('st2').className='step on'; $('chip').classList.add('mid');
+  stepText('st2',`잔액 ${a} ≥ ${amt}인지 확인 중`);
   await wait(900); if(!txBusy)return;
   if(amt>a){
     $('st2').className='step fail'; $('chip').classList.add('rejected');
-    cap($('txCap'),`② 규칙 검사 실패 — 잔액 ${a}로는 ${amt}을 보낼 수 없다. 상태판은 그대로.`,'bad');
+    stepText('st2',`잔액 ${a} < ${amt} · 거절 ✕`);
+    cap($('txCap'),`② 규칙 검사 실패 — 잔액 ${a}로는 ${amt}을 보낼 수 없습니다. 상태는 바뀌지 않고 그대로 유지됩니다.`,'bad');
     txBusy=false; return;
   }
+  stepText('st2',`잔액 ${a} ≥ ${amt} · 통과 ✓`);
   $('st2').className='step done'; $('st3').className='step on';
+  stepText('st3','Alice와 Bob의 새 잔액 계산 중');
   $('chip').classList.remove('mid'); $('chip').classList.add('go');
   await wait(1000); if(!txBusy)return;
   setBal($('barA'),$('numA'),a-amt,'down'); $('barB').classList.add('grow'); setBal($('barB'),$('numB'),b+amt,'up');
   $('st3').className='step done';
-  cap($('txCap'),`③ 상태 반영 — Alice ${a-amt} · Bob ${b+amt}.`+(a-amt===0?' 전 재산이 이동했다. 0에서 또 보내면 어떻게 될까?':''),'ok');
+  stepText('st3',`Alice ${a-amt} · Bob ${b+amt}로 반영 ✓`);
+  cap($('txCap'),`③ 상태 반영 — Alice ${a-amt} · Bob ${b+amt}.`+(a-amt===0?' 전 재산이 이동했습니다. 0에서 또 보내면 어떻게 될까요?':''),'ok');
   txBusy=false;
 }
 
@@ -609,7 +625,7 @@ async function runOrders(){
   await wait(700); if(!ordBusy)return;
   $('bdA').classList.add('diverged-a'); $('bdB').classList.add('diverged-b'); $('neq').classList.add('hot');
   qreveal('qz1',1);
-  cap($('ordCap'),'노드 A는 (3·9·0), 노드 B는 (5·2·5). 같은 규칙인데 상태가 갈라졌다 — 그래서 “같은 순서”가 필수다.','bad');
+  cap($('ordCap'),'노드 A는 (3·9·0), 노드 B는 (5·2·5). 같은 규칙인데 상태가 갈라졌습니다. 그래서 “같은 순서”가 필수가 됩니다.','bad');
   ordBusy=false;
 }
 
@@ -644,29 +660,21 @@ async function playConsensus(){
   }
   edges.forEach(e=>e.classList.remove('hot'));
   qreveal('qz2',1);
-  cap($('conCap'),'일곱 노드가 모두 같은 초록 상태 — 하나의 상태판을 공유한다. 이것이 합의의 목표다.','ok');
+  cap($('conCap'),'일곱 노드가 모두 같은 하나의 초록색 상태를 공유합니다. 이것이 합의의 목표입니다.','ok');
   conBusy=false;
 }
 async function splitConsensus(){
   if(conBusy)return; resetConsensus(); conBusy=true;
   const colors=['#4b8cff','#4b8cff','#ff6d88','#ff6d88','#4fdf9c','#4fdf9c','#4b8cff'];
   for(let i=0;i<7;i++){if(!conBusy)return; cn(i).setAttribute('fill',colors[i]); await wait(200)}
-  cap($('conCap'),'색이 세 갈래 — 노드마다 다른 상태를 “진짜”라고 믿는 중. 사용자는 어느 잔액이 맞는지 알 수 없다.','bad');
+  cap($('conCap'),'색이 세 갈래이며 노드마다 다른 상태를 “진짜”라고 믿는 중. 사용자는 어느 잔액이 맞는지 알 수 없습니다.','bad');
   conBusy=false;
 }
 
 /* ---- 개념 ---- */
 function syncDots(){const h=$('consHalf');h.classList.remove('sync');void h.offsetWidth;h.classList.add('sync')}
 
-/* ---- 타이머 & 산출물 ---- */
-let tId=null,remain=180;
-function drawT(){
-  const t=$('timer');
-  t.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
-  t.className='timer'+(remain<=0?' over':remain<=30?' warn':'');
-}
-function startTimer(){if(tId)return;tId=setInterval(()=>{remain--;drawT();if(remain<=0){clearInterval(tId);tId=null;toast('3분 종료! 저장 버튼을 눌러 주세요.')}},1000)}
-function resetTimer(){clearInterval(tId);tId=null;remain=180;drawT()}
+/* ---- 산출물 ---- */
 const WEEK=1, LSKEY='bay18.w'+WEEK;
 function buildOutput(){
   return `[BAY18-W1] 상태 머신\nS0 현재 상태: ${$('o1').value}\nTX 트랜잭션: ${$('o2').value}\nS1 새 상태: ${$('o3').value}\n순서 문제: ${$('o4').value}`;
@@ -787,7 +795,7 @@ addEventListener('keydown',e=>{
   if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1)}
 });
 addEventListener('scroll',()=>{$('progress').style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'});
-drawT(); resetTx(); resetOrders(); resetConsensus(); matchReset(); restoreLocal();
+resetTx(); resetOrders(); resetConsensus(); matchReset(); restoreLocal();
 </script>
 </body>
 </html>
