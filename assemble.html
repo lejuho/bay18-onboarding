@@ -53,8 +53,15 @@ button:hover{filter:brightness(1.12)}
   padding:12px 20px;border-radius:11px;opacity:0;transition:.25s;z-index:120;font-weight:700;pointer-events:none}
 .toast.show{opacity:1}
 </style>
+<style>
+.homelogo{position:fixed;top:12px;left:16px;z-index:100;opacity:.8;transition:opacity .2s;line-height:0}
+.homelogo:hover{opacity:1}
+.homelogo img{height:30px;mix-blend-mode:screen;display:block}
+@media (max-width:920px){.homelogo img{height:24px}}
+</style>
 </head>
 <body>
+<a class="homelogo" href="index.html" aria-label="허브로 돌아가기"><img src="assets/bay-logo.png" alt="BAY — Blockchain at Yonsei"></a>
 <div class="wrap">
   <div class="eyebrow"><span class="wk">지도</span> 나의 트랜잭션 생애주기 <a href="index.html">← 허브로</a></div>
   <h1>6주의 산출물이 <em>한 장의 지도</em>가 됩니다</h1>
@@ -71,6 +78,7 @@ button:hover{filter:brightness(1.12)}
       <button onclick="importPaste()">붙여넣은 내용 불러오기</button>
       <button class="btn-ghost" onclick="copyAll()">지도 전체 복사</button>
       <button class="btn-ghost" onclick="downloadAll()">지도 TXT 저장</button>
+      <button class="btn-ghost" style="margin-left:auto;opacity:.6" onclick="wipeAll()">이 기기 기록 전체 삭제</button>
     </div>
   </div>
 </div>
@@ -133,6 +141,15 @@ function copyAll(){
     ta.select();document.execCommand('copy');ta.remove();
   });
   toast('지도 전체를 복사했습니다.');
+}
+function wipeAll(){
+  if(!confirm('이 브라우저에 저장된 산출물·이름·기수 기록을 모두 삭제할까요?\n(구글폼으로 이미 제출한 응답은 삭제되지 않습니다)'))return;
+  try{
+    for(let i=1;i<=6;i++)localStorage.removeItem('bay18.w'+i);
+    localStorage.removeItem('bay18.name');
+    localStorage.removeItem('bay18.member');
+  }catch(e){}
+  render(); toast('이 기기의 기록을 모두 지웠습니다.');
 }
 function downloadAll(){
   const blob=new Blob([allText()+'\n'],{type:'text/plain;charset=utf-8'});

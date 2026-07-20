@@ -39,6 +39,7 @@ a.week:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.4)}
 .week .date{font-size:13px;color:#7a8db0;font-family:var(--mono)}
 .week .done{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;background:var(--green);color:#04321c;display:none;place-items:center;font-weight:800;font-size:14px}
 .week.has .done{display:grid}
+.week.draft .done{display:grid;background:var(--amber);color:#4a3400}
 .week.soon{opacity:.45;pointer-events:none}
 .week.soon b::after{content:" · 준비 중";font-size:12px;color:#9aa9c6;font-weight:600}
 a.assemble{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;text-decoration:none;
@@ -48,8 +49,15 @@ a.assemble b{font-size:17px}
 a.assemble .prog{font-family:var(--mono);color:var(--green);font-weight:800}
 .foot{margin-top:22px;font-size:12.5px;color:var(--ink-dim)}
 </style>
+<style>
+.homelogo{position:fixed;top:12px;left:16px;z-index:100;opacity:.8;transition:opacity .2s;line-height:0}
+.homelogo:hover{opacity:1}
+.homelogo img{height:30px;mix-blend-mode:screen;display:block}
+@media (max-width:920px){.homelogo img{height:24px}}
+</style>
 </head>
 <body>
+<a class="homelogo" href="index.html" aria-label="허브로 돌아가기"><img src="assets/bay-logo.png" alt="BAY — Blockchain at Yonsei"></a>
 <div class="wrap">
   <div class="eyebrow"><span class="wk">BAY 18기</span> 온보딩 2교시 · 이주호</div>
   <h1>트랜잭션의 <em>생애주기</em>를<br>6주에 걸쳐 눈으로 봅니다</h1>
@@ -77,7 +85,7 @@ a.assemble .prog{font-family:var(--mono);color:var(--green);font-weight:800}
   </div>
 
   <a class="assemble" href="assemble.html"><b>🗺️ 나의 트랜잭션 생애주기 지도</b><span class="prog" id="prog">0 / 6</span></a>
-  <p class="foot">산출물은 이 기기의 브라우저에만 저장됩니다. 기기를 바꿨다면 조립 페이지의 붙여넣기 기능을 이용하세요.</p>
+  <p class="foot"><b style="color:var(--green)">✓</b> 제출 버튼 사용함 · <b style="color:var(--amber)">…</b> 작성 중(미제출) — 실제 제출 확인은 구글폼 시트 기준입니다. 산출물은 이 기기의 브라우저에만 저장되며, 기기를 바꿨다면 조립 페이지의 붙여넣기 기능을 이용하세요.</p>
 </div>
 <script>
 const nm=document.getElementById('nm');
@@ -86,13 +94,18 @@ nm.addEventListener('input',()=>{try{localStorage.setItem('bay18.name',nm.value)
 const mc=document.getElementById('mc');
 try{mc.value=localStorage.getItem('bay18.member')||''}catch(e){}
 mc.addEventListener('change',()=>{try{localStorage.setItem('bay18.member',mc.value)}catch(e){}});
-let n=0;
+let nsub=0;
 for(let i=1;i<=6;i++){
   try{
-    if(localStorage.getItem('bay18.w'+i)){document.getElementById('wk'+i).classList.add('has');n++}
+    const d=JSON.parse(localStorage.getItem('bay18.w'+i)||'null');
+    if(!d)continue;
+    const el=document.getElementById('wk'+i);
+    const hasContent=d.f&&Object.values(d.f).some(v=>v&&String(v).trim());
+    if(d.sub){el.classList.add('has');nsub++;}
+    else if(hasContent){el.classList.add('draft');el.querySelector('.done').textContent='…';}
   }catch(e){}
 }
-document.getElementById('prog').textContent=n+' / 6';
+document.getElementById('prog').textContent=nsub+' / 6 제출';
 </script>
 </body>
 </html>

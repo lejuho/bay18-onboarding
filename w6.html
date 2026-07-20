@@ -228,8 +228,15 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
   html{scroll-behavior:auto}
 }
 </style>
+<style>
+.homelogo{position:fixed;top:12px;left:16px;z-index:100;opacity:.8;transition:opacity .2s;line-height:0}
+.homelogo:hover{opacity:1}
+.homelogo img{height:30px;mix-blend-mode:screen;display:block}
+@media (max-width:920px){.homelogo img{height:24px}}
+</style>
 </head>
 <body>
+<a class="homelogo" href="index.html" aria-label="허브로 돌아가기"><img src="assets/bay-logo.png" alt="BAY — Blockchain at Yonsei"></a>
 <div class="progress" id="progress"></div>
 <div class="toast" id="toast"></div>
 
@@ -614,6 +621,9 @@ function restoreLocal(){
     if(d&&d.f)['o1','o2'].forEach(k=>{if(d.f[k])$(k).value=d.f[k]});
   }catch(e){}
 }
+function markSubmitted(){
+  try{const d=JSON.parse(localStorage.getItem(LSKEY)||'{}');d.sub=1;localStorage.setItem(LSKEY,JSON.stringify(d))}catch(e){}
+}
 function doCopy(text){
   return navigator.clipboard.writeText(text).catch(()=>{
     const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);
@@ -629,6 +639,7 @@ async function submitForm(){
   const c=window.BAY18_CONFIG||{};
   if(!c.formAction||!c.fields||!c.fields.output){
     await doCopy(buildOutput());
+    markSubmitted();
     toast('구글폼 설정 전이라 대신 복사했습니다. 채널에 붙여넣어 주세요.');
     return;
   }
@@ -641,7 +652,8 @@ async function submitForm(){
   if(c.fields.name&&name)p.set(c.fields.name,name);
   p.set(c.fields.output,buildOutput());
   window.open(c.formAction+'?'+p.toString(),'_blank');
-  toast('구글폼이 열렸습니다. 확인 후 제출을 눌러 주세요.');
+  markSubmitted();
+  toast('구글폼이 열렸습니다. 반드시 폼에서 제출까지 눌러 주세요!');
 }
 function downloadOutput(){
   saveLocal();
