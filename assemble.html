@@ -56,8 +56,8 @@ button:hover{filter:brightness(1.12)}
 <style>
 .homelogo{position:fixed;top:12px;left:16px;z-index:100;opacity:.8;transition:opacity .2s;line-height:0}
 .homelogo:hover{opacity:1}
-.homelogo img{height:30px;display:block}
-@media (max-width:920px){.homelogo img{height:24px}}
+.homelogo img{height:45px;display:block}
+@media (max-width:920px){.homelogo img{height:45px}}
 </style>
 </head>
 <body>
@@ -110,7 +110,7 @@ function render(){
     if(has)done++;
     const body=has
       ?parseLines(d.text).map(l=>`<div class="line"><span class="k">${esc(l.k)}</span><span>${esc(l.v)}</span></div>`).join('')
-      :`<div class="miss">아직 없음 — ${w.n<=2?`<a href="w${w.n}.html" style="color:#2d66c8">W${w.n} 열기</a>`:'수업 후 채워집니다'}</div>`;
+      :`<div class="miss">아직 없음 — <a href="w${w.n}.html" style="color:#2d66c8">W${w.n} 열기</a></div>`;
     return `<div class="stagec ${has?'done':''}">
       <div class="head"><span class="wt">W${w.n} · ${esc(w.s)}</span><b>${esc(w.t)}</b></div>${body}</div>`;
   }).join('');
