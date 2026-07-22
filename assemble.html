@@ -85,31 +85,39 @@ button:hover{filter:brightness(1.12)}
 <div class="toast" id="toast"></div>
 <script>
 const WEEKS=[
-  {n:1,t:'블록체인과 상태 머신',s:'상태가 바뀐다'},
-  {n:2,t:'트랜잭션 검증과 전파',s:'대기실까지의 길'},
-  {n:3,t:'EVM 실행과 토큰',s:'상태를 바꾸는 계산기'},
-  {n:4,t:'트랜잭션과 상태 변화',s:'실행이 남기는 것'},
-  {n:5,t:'거래 포함과 Finality',s:'언제 확정되는가'},
-  {n:6,t:'프로젝트의 위험과 회복 설계',s:'무엇을 믿고 있는가'},
+  {n:1,t:'블록체인과 상태 머신',s:'상태가 바뀐다',fields:['S0 현재 상태','TX 트랜잭션','S1 새 상태','순서 문제']},
+  {n:2,t:'트랜잭션 검증과 전파',s:'대기실까지의 길',fields:['1 지갑·서명','2 RPC 전달','3 노드 검증','4 txpool']},
+  {n:3,t:'EVM 실행과 토큰',s:'상태를 바꾸는 계산기',fields:['approve 이유','헷갈린 것']},
+  {n:4,t:'트랜잭션과 상태 변화',s:'실행이 남기는 것',fields:['state','receipt']},
+  {n:5,t:'거래 포함과 Finality',s:'언제 확정되는가',fields:['inclusion vs finality','헷갈린 것']},
+  {n:6,t:'프로젝트의 위험과 회복 설계',s:'무엇을 믿고 있는가',fields:['위험','회복']},
 ];
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1700)}
 function getW(n){try{return JSON.parse(localStorage.getItem('bay18.w'+n)||'null')}catch(e){return null}}
 function parseLines(text){
-  // 헤더([BAY18-W#] …) 다음 줄들을 "키: 값"으로 분해
-  return text.split('\n').slice(1).map(l=>{
+  // 새 형식(" / ")과 기존 줄바꿈 형식을 모두 지원한다.
+  const body=String(text||'').replace(/^\[BAY18-W\d\][^/\n]*(?:\s*\/\s*|\n)?/,'');
+  return body.split(/\n|\s+\/\s+(?=[^/:]{1,40}:)/).map(l=>{
     const i=l.indexOf(':');
     return i>0?{k:l.slice(0,i).trim(),v:l.slice(i+1).trim()}:{k:'',v:l.trim()};
   }).filter(l=>l.v);
+}
+function resultLines(d,w){
+  if(d&&d.f){
+    return w.fields.map((k,i)=>({k,v:String(d.f['o'+(i+1)]||'').trim()})).filter(l=>l.v);
+  }
+  return d&&d.text?parseLines(d.text):[];
 }
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function render(){
   let done=0;
   document.getElementById('map').innerHTML=WEEKS.map(w=>{
     const d=getW(w.n);
-    const has=d&&d.text&&parseLines(d.text).length;
+    const lines=resultLines(d,w);
+    const has=lines.length>0;
     if(has)done++;
     const body=has
-      ?parseLines(d.text).map(l=>`<div class="line"><span class="k">${esc(l.k)}</span><span>${esc(l.v)}</span></div>`).join('')
+      ?lines.map(l=>`<div class="line"><span class="k">${esc(l.k)}</span><span>${esc(l.v)}</span></div>`).join('')
       :`<div class="miss">아직 없음 — <a href="w${w.n}.html" style="color:#2d66c8">W${w.n} 열기</a></div>`;
     return `<div class="stagec ${has?'done':''}">
       <div class="head"><span class="wt">W${w.n} · ${esc(w.s)}</span><b>${esc(w.t)}</b></div>${body}</div>`;
@@ -157,6 +165,9 @@ function downloadAll(){
   const a=document.createElement('a');a.href=url;a.download='BAY18_생애주기지도.txt';a.click();URL.revokeObjectURL(url);
 }
 render();
+addEventListener('pageshow',render);
+addEventListener('focus',render);
+addEventListener('storage',render);
 </script>
 </body>
 </html>
