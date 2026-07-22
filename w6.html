@@ -417,7 +417,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <!-- 7 · 산출물 -->
 <section>
   <div class="wrap">
-    <div class="eyebrow"><span class="wk">정리</span> 마지막 3분 <span class="min">3'</span></div>
+    <div class="eyebrow"><span class="wk">내 정리</span> 설계의 관점 <span class="min">3'</span></div>
     <h2>프로젝트 하나를 골라 <em>위험과 회복</em>을 적어보세요</h2>
     <div class="outgrid">
       <div class="flowform">
@@ -563,7 +563,7 @@ async function playAttack(protectedMode){
     $('brk').classList.add('show');
     drawVault(limit,' 보전');
     attackResult(true,'done','키 탈취 → 서명 통과 → 이상 출금 탐지 → circuit breaker 차단 → ETH·USDC 잔액 보전');
-    cap($('roCap'),'⛔ 차단 — 일일 출금 한도(circuit breaker)가 작동해 유출이 하루치에서 멈췄습니다. 그리고 🩹 복구 — 공시·보전·재개 절차가 시작됩니다. 같은 공격 방식임에도 다른 결과가 됩니다.','ok');
+    cap($('roCap'),'⛔ 차단 — 일일 출금 한도(circuit breaker)가 작동해 유출이 하루치에서 멈췄습니다. 그리고 공시·보전·재개 절차를 통해 복구가 시작됩니다. 같은 공격 방식임에도 더 나은 결과가 됩니다.','ok');
   }else{
     drawVault(0);
     $('vamtEth').className='vaultamt red'; $('vamtUsdc').className='vaultamt red';
