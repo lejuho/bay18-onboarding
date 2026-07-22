@@ -94,18 +94,26 @@ nm.addEventListener('input',()=>{try{localStorage.setItem('bay18.name',nm.value)
 const mc=document.getElementById('mc');
 try{mc.value=localStorage.getItem('bay18.member')||''}catch(e){}
 mc.addEventListener('change',()=>{try{localStorage.setItem('bay18.member',mc.value)}catch(e){}});
-let nsub=0;
-for(let i=1;i<=6;i++){
-  try{
-    const d=JSON.parse(localStorage.getItem('bay18.w'+i)||'null');
-    if(!d)continue;
-    const el=document.getElementById('wk'+i);
-    const hasContent=d.f&&Object.values(d.f).some(v=>v&&String(v).trim());
-    if(d.sub){el.classList.add('has');nsub++;}
-    else if(hasContent){el.classList.add('draft');el.querySelector('.done').textContent='…';}
-  }catch(e){}
+function renderProgress(){
+  let nsub=0;
+  for(let i=1;i<=6;i++){
+    try{
+      const el=document.getElementById('wk'+i);
+      el.classList.remove('has','draft');
+      el.querySelector('.done').textContent='✓';
+      const d=JSON.parse(localStorage.getItem('bay18.w'+i)||'null');
+      if(!d)continue;
+      const hasContent=d.f&&Object.values(d.f).some(v=>v&&String(v).trim());
+      if(d.sub){el.classList.add('has');nsub++;}
+      else if(hasContent){el.classList.add('draft');el.querySelector('.done').textContent='…';}
+    }catch(e){}
+  }
+  document.getElementById('prog').textContent=nsub+' / 6 제출';
 }
-document.getElementById('prog').textContent=nsub+' / 6 제출';
+renderProgress();
+addEventListener('pageshow',renderProgress);
+addEventListener('focus',renderProgress);
+addEventListener('storage',renderProgress);
 </script>
 </body>
 </html>

@@ -806,12 +806,12 @@ function oTry(b){
 /* ---- 산출물 ---- */
 const WEEK=2, LSKEY='bay18.w'+WEEK;
 function buildOutput(){
-  return `[BAY18-W2] 트랜잭션 검증과 전파\n1 지갑·서명: ${$('o1').value}\n2 RPC 전달: ${$('o2').value}\n3 노드 검증: ${$('o3').value}\n4 txpool: ${$('o4').value}`;
+  return `[BAY18-W2] 트랜잭션 검증과 전파 / 1 지갑·서명: ${$('o1').value} / 2 RPC 전달: ${$('o2').value} / 3 노드 검증: ${$('o3').value} / 4 txpool: ${$('o4').value}`;
 }
 function saveLocal(){
-  try{localStorage.setItem(LSKEY,JSON.stringify({
+  try{const prev=JSON.parse(localStorage.getItem(LSKEY)||'{}');localStorage.setItem(LSKEY,JSON.stringify({
     f:{o1:$('o1').value,o2:$('o2').value,o3:$('o3').value,o4:$('o4').value},
-    text:buildOutput(),ts:Date.now()
+    text:buildOutput(),ts:Date.now(),sub:prev.sub||0
   }))}catch(e){}
 }
 function restoreLocal(){

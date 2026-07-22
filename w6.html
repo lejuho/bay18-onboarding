@@ -652,12 +652,12 @@ function lqPick(i,val,btn){
 /* ---- 저장·제출 ---- */
 const WEEK=6, LSKEY='bay18.w'+WEEK;
 function buildOutput(){
-  return `[BAY18-W6] 프로젝트의 위험과 회복 설계\n위험: ${$('o1').value}\n회복: ${$('o2').value}`;
+  return `[BAY18-W6] 프로젝트의 위험과 회복 설계 / 위험: ${$('o1').value} / 회복: ${$('o2').value}`;
 }
 function saveLocal(){
-  try{localStorage.setItem(LSKEY,JSON.stringify({
+  try{const prev=JSON.parse(localStorage.getItem(LSKEY)||'{}');localStorage.setItem(LSKEY,JSON.stringify({
     f:{o1:$('o1').value,o2:$('o2').value},
-    text:buildOutput(),ts:Date.now()
+    text:buildOutput(),ts:Date.now(),sub:prev.sub||0
   }))}catch(e){}
 }
 function restoreLocal(){

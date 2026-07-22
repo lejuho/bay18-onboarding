@@ -698,12 +698,12 @@ function jPick(i,val,btn){
 /* ---- 저장·제출 ---- */
 const WEEK=5, LSKEY='bay18.w'+WEEK;
 function buildOutput(){
-  return `[BAY18-W5] 거래 포함과 Finality\ninclusion vs finality: ${$('o1').value}\n헷갈린 것: ${$('o2').value}`;
+  return `[BAY18-W5] 거래 포함과 Finality / inclusion vs finality: ${$('o1').value} / 헷갈린 것: ${$('o2').value}`;
 }
 function saveLocal(){
-  try{localStorage.setItem(LSKEY,JSON.stringify({
+  try{const prev=JSON.parse(localStorage.getItem(LSKEY)||'{}');localStorage.setItem(LSKEY,JSON.stringify({
     f:{o1:$('o1').value,o2:$('o2').value},
-    text:buildOutput(),ts:Date.now()
+    text:buildOutput(),ts:Date.now(),sub:prev.sub||0
   }))}catch(e){}
 }
 function restoreLocal(){

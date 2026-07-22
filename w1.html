@@ -677,12 +677,12 @@ function syncDots(){const h=$('consHalf');h.classList.remove('sync');void h.offs
 /* ---- 산출물 ---- */
 const WEEK=1, LSKEY='bay18.w'+WEEK;
 function buildOutput(){
-  return `[BAY18-W1] 상태 머신\nS0 현재 상태: ${$('o1').value}\nTX 트랜잭션: ${$('o2').value}\nS1 새 상태: ${$('o3').value}\n순서 문제: ${$('o4').value}`;
+  return `[BAY18-W1] 상태 머신 / S0 현재 상태: ${$('o1').value} / TX 트랜잭션: ${$('o2').value} / S1 새 상태: ${$('o3').value} / 순서 문제: ${$('o4').value}`;
 }
 function saveLocal(){
-  try{localStorage.setItem(LSKEY,JSON.stringify({
+  try{const prev=JSON.parse(localStorage.getItem(LSKEY)||'{}');localStorage.setItem(LSKEY,JSON.stringify({
     f:{o1:$('o1').value,o2:$('o2').value,o3:$('o3').value,o4:$('o4').value},
-    text:buildOutput(),ts:Date.now()
+    text:buildOutput(),ts:Date.now(),sub:prev.sub||0
   }))}catch(e){}
 }
 function restoreLocal(){
