@@ -314,7 +314,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       <div class="ronin" style="margin-top:18px">
         <div class="vaultcard">
           <h4>🏦 브리지 금고 (자금 흐름)</h4>
-          <div class="sub">서로 다른 두 자산이 <b>단일 브리지 컨트랙트에 함께 집중되어 있었습니다.</b></div>
+          <div class="sub">서로 다른 두 자산의 큰 금액이 <b>단일 브리지 컨트랙트에 함께 집중되어 있었습니다.</b></div>
           <div class="vaultasset">
             <div class="vaultassethead"><b>ETH 금고</b><span class="vaultamt" id="vamtEth">173,600 ETH</span></div>
             <div class="vaultbarwrap"><div class="vaultbar" id="vbarEth"></div></div>
@@ -504,8 +504,16 @@ async function overlayOn(){
 
 /* ---- 활동2 · Ronin ---- */
 let roBusy=false;
+const VAULT_ETH=173600,VAULT_USDC=25500000;
 function drawKeys(stolen){
   $('keys').innerHTML=Array.from({length:9},(_,i)=>`<div class="vkey ${i<stolen?'stolen':''}" >🔑</div>`).join('');
+}
+function drawVault(pct,suffix=''){
+  const eth=Math.round(VAULT_ETH*pct/100);
+  const usdc=Math.round(VAULT_USDC*pct/100);
+  $('vbarEth').style.width=pct+'%'; $('vbarUsdc').style.width=pct+'%';
+  $('vamtEth').textContent=eth.toLocaleString()+' ETH'+suffix;
+  $('vamtUsdc').textContent=usdc.toLocaleString()+' USDC'+suffix;
 }
 function attackResult(protectedMode,state,text){
   const el=$(protectedMode?'attackProtected':'attackActual');
@@ -514,8 +522,9 @@ function attackResult(protectedMode,state,text){
 function resetRonin(clearResults=true){
   roBusy=false;
   drawKeys(0);
-  $('vbar').style.width='100%'; $('vbar').className='vaultbar';
-  $('vamt').textContent='173,600 ETH'; $('vamt').className='vaultamt';
+  $('vbarEth').className='vaultbar'; $('vbarUsdc').className='vaultbar usdc';
+  $('vamtEth').className='vaultamt'; $('vamtUsdc').className='vaultamt';
+  drawVault(100);
   $('brk').classList.remove('show');
   $('vchip').textContent='verifySignature( … ) → 대기'; $('vchip').className='verifychip';
   if(clearResults){
@@ -538,14 +547,12 @@ async function playAttack(protectedMode){
   cap($('roCap'),'서명 검증 통과 — 탈취된 키로 만든 서명도 “진짜 서명”입니다. txpool 이전 검증 결과는 정상입니다.','warn');
   await wait(1300); if(!roBusy)return;
   cap($('roCap'),'금고가 비워지기 시작합니다…','bad');
-  const total=173600;
   let pct=100;
   const limit=protectedMode?86:0; // 보호 모드: 일일 한도에서 차단
-  $('vbar').classList.add(protectedMode?'held':'drain');
+  ['vbarEth','vbarUsdc'].forEach(id=>$(id).classList.add(protectedMode?'held':'drain'));
   while(pct>limit&&roBusy){
     pct-=2;
-    $('vbar').style.width=pct+'%';
-    $('vamt').textContent=Math.round(total*pct/100).toLocaleString()+' ETH';
+    drawVault(pct);
     if(protectedMode&&pct<=94&&pct>limit&&pct%4===0){
       cap($('roCap'),'📡 탐지 — 이상 출금 패턴 감지, 경보 발생…','warn');
     }
@@ -554,12 +561,13 @@ async function playAttack(protectedMode){
   if(!roBusy)return;
   if(protectedMode){
     $('brk').classList.add('show');
-    $('vamt').textContent=Math.round(total*limit/100).toLocaleString()+' ETH 보전';
-    attackResult(true,'done','키 탈취 → 서명 통과 → 이상 출금 탐지 → circuit breaker 차단 → 149,296 ETH 보전');
+    drawVault(limit,' 보전');
+    attackResult(true,'done','키 탈취 → 서명 통과 → 이상 출금 탐지 → circuit breaker 차단 → ETH·USDC 잔액 보전');
     cap($('roCap'),'⛔ 차단 — 일일 출금 한도(circuit breaker)가 작동해 유출이 하루치에서 멈췄습니다. 그리고 🩹 복구 — 공시·보전·재개 절차가 시작됩니다. 같은 공격 방식임에도 다른 결과가 됩니다.','ok');
   }else{
-    $('vamt').textContent='0 ETH'; $('vamt').className='vaultamt red';
-    attackResult(false,'bad','키 탈취 → 서명 통과 → 검증 경보 없음 → 173,600 ETH 전액 유출 · 탐지 지연');
+    drawVault(0);
+    $('vamtEth').className='vaultamt red'; $('vamtUsdc').className='vaultamt red';
+    attackResult(false,'bad','키 탈취 → 서명 통과 → 검증 경보 없음 → 173,600 ETH + 25.5M USDC 전액 유출 · 탐지 지연');
     cap($('roCap'),'전액 유출 — 블록체인은 한 순간도 멈추지 않았고, 모든 검증은 통과됐습니다. 실제로도 며칠 뒤에야 발견됐습니다.','bad');
   }
   roBusy=false;
