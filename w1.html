@@ -260,14 +260,14 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">W1</span> BAY 18기 온보딩 · 2교시 <span class="min">30 MIN</span></div>
-    <h1>블록체인은<br><em>상태를 바꾸는 기계</em>다</h1>
+    <h1>블록체인은<br><em>상태를 바꾸는 기계</em>입니다</h1>
     <p class="lead">계좌 잔액도, 토큰 보유량도 전부 하나의 <b>상태</b>입니다. 오늘은 트랜잭션이 그 상태를 어떻게 바꾸고, 왜 모든 노드가 같은 결과에 도달해야 하는지를 봅니다.</p>
     <div class="formula"><span class="s0">State₀</span><span class="ar">+</span><span class="tx">TX</span><span class="ar">→</span><span class="s1">State₁</span></div>
     <div class="agenda">
-      <div class="ag1"><b>2'</b>OT 연결</div>
+      <div class="ag1"><b>2'</b>도입</div>
       <div class="ag2"><b>18'</b>상태 · 트랜잭션 · 순서 · 합의</div>
       <div class="ag3"><b>7'</b>1·3교시 연결</div>
-      <div class="ag4"><b>3'</b>산출물</div>
+      <div class="ag4"><b>3'</b>정리</div>
     </div>
   </div>
 </section>
@@ -309,7 +309,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <span class="slbl">직접 실험</span>
         <input id="amt" type="number" min="1" max="20" value="7" inputmode="numeric" aria-label="전송 금액">
         <button onclick="sendCustom()">이 금액으로 전송</button>
-        <span class="hint">전 재산을 보내면? 잔액보다 크면? 여러 번 이어서 보내면? — 상태는 초기화 전까지 누적됩니다.</span>
+        <span class="hint">전 재산을 보내면? 잔액보다 크면? 여러 번 이어서 보내면 어떻게 될까요? 시험해보세요. 상태는 초기화 전까지 누적됩니다.</span>
       </div>
     </div>
   </div>
@@ -428,7 +428,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <ul>
           <li>어떤 블록·어떤 순서를 채택할까?</li>
           <li>노드 <b>사이</b>에서 일어나는 동기화</li>
-          <li>세부 방식(PoW·PoS)은 다음에</li>
+          <li>세부 방식(PoW·PoS)에 따라 차이가 있음</li>
         </ul>
         <div class="btnrow"><button class="btn-ghost" onclick="syncDots()">맞춰보기</button></div>
       </div>
@@ -471,8 +471,8 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <!-- 7 · 산출물 -->
 <section>
   <div class="wrap">
-    <div class="eyebrow"><span class="wk">산출물</span> 나의 상태 머신 한 장 <span class="min">3'</span></div>
-    <h2>일상 사례 하나를 <em>화살표로</em> 정리하세요</h2>
+    <div class="eyebrow"><span class="wk">정리</span> 상태 변화 적어보기 <span class="min">3'</span></div>
+    <h2>생각할 수 있는 일상 사례 하나를 <em>화살표로</em> 정리하세요</h2>
     <div class="outgrid">
       <div class="flowform">
         <div class="fcell"><label><i>S₀</i>현재 상태</label><textarea id="o1" placeholder=""></textarea></div>
@@ -549,7 +549,7 @@ async function playBadTx(){
   $('chip').innerHTML='TX<br>−13→';
   $('st1').className='step on';
   stepText('st1','Alice → Bob · 13 보내기 요청 작성 중');
-  cap($('txCap'),'① Alice가 “Bob에게 13 보내기”를 요청한다.');
+  cap($('txCap'),'① Alice가 “Bob에게 13 보내기”를 요청합니다.');
   await wait(800); if(!txBusy)return;
   stepText('st1','Alice → Bob · 13 요청 생성 ✓');
   $('st1').className='step done'; $('st2').className='step on';
