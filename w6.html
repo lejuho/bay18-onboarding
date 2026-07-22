@@ -120,11 +120,15 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .vaultcard{background:var(--card);color:var(--card-ink);border-radius:var(--r-md);padding:16px}
 .vaultcard h4{margin:0 0 4px;font-size:15px}
 .vaultcard .sub{font-family:var(--mono);font-size:11px;color:#8a9cbd;margin-bottom:12px}
-.vaultbarwrap{height:22px;background:#e6edf9;border-radius:99px;overflow:hidden;position:relative}
+.vaultasset+.vaultasset{margin-top:12px}
+.vaultassethead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:5px}
+.vaultassethead b{font-family:var(--mono);font-size:12px;color:#5a6f95}
+.vaultbarwrap{height:18px;background:#e6edf9;border-radius:99px;overflow:hidden;position:relative}
 .vaultbar{height:100%;width:100%;border-radius:99px;background:linear-gradient(90deg,#53dcff,#4b8cff);transition:width .25s linear,background .4s}
+.vaultbar.usdc{background:linear-gradient(90deg,#948fff,#6d67df)}
 .vaultbar.drain{background:linear-gradient(90deg,#ff8ba1,#ff6d88)}
 .vaultbar.held{background:linear-gradient(90deg,#ffd166,#ff9d5c)}
-.vaultamt{font-family:var(--mono);font-weight:800;font-size:20px;margin-top:10px}
+.vaultamt{font-family:var(--mono);font-weight:800;font-size:16px}
 .vaultamt.red{color:#c02446}
 .brk{margin-top:10px;font-family:var(--mono);font-size:12px;font-weight:800;color:#8a5a12;opacity:0;transition:.3s}
 .brk.show{opacity:1}
@@ -300,9 +304,9 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <div class="lens l-ext"><div class="ic">🌐</div><b>외부 의존성</b><div class="en">EXTERNAL DEPENDENCY</div><p>어떤 체인·브리지·오라클·운영자를 믿는가?</p></div>
       </div>
       <div class="quiz" id="qz1">
-        <div class="q">예측 — Ronin에서 자산을 빼간 그 유출 거래는, 2주차의 3관문(서명·nonce·잔액)을 통과했을까요?</div>
+        <div class="q">예측 — Ronin에서 자산을 빼간 그 유출 거래는, 3중 검증(서명·nonce·잔액)을 통과했을까요?</div>
         <div class="qopts">
-          <button class="qopt" onclick="qpick('qz1',0)">통과 못한다 — 위조니까 관문 1에서 걸린다</button>
+          <button class="qopt" onclick="qpick('qz1',0)">통과 못한다 — 위조니까 서명 검증에서 걸린다</button>
           <button class="qopt" onclick="qpick('qz1',1)">통과한다 — 규칙상으로는 유효한 거래였다</button>
           <button class="qopt" onclick="qpick('qz1',2)">브리지에는 관문이 없다</button>
         </div>
@@ -310,9 +314,15 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       <div class="ronin" style="margin-top:18px">
         <div class="vaultcard">
           <h4>🏦 브리지 금고 (자금 흐름)</h4>
-          <div class="sub">173,600 ETH + 25.5M USDC의 자금이 <b>단일 컨트랙트에 집중되어 있었습니다.</b></div>
-          <div class="vaultbarwrap"><div class="vaultbar" id="vbar"></div></div>
-          <div class="vaultamt" id="vamt">173,600 ETH</div>
+          <div class="sub">서로 다른 두 자산이 <b>단일 브리지 컨트랙트에 함께 집중되어 있었습니다.</b></div>
+          <div class="vaultasset">
+            <div class="vaultassethead"><b>ETH 금고</b><span class="vaultamt" id="vamtEth">173,600 ETH</span></div>
+            <div class="vaultbarwrap"><div class="vaultbar" id="vbarEth"></div></div>
+          </div>
+          <div class="vaultasset">
+            <div class="vaultassethead"><b>USDC 금고</b><span class="vaultamt" id="vamtUsdc">25,500,000 USDC</span></div>
+            <div class="vaultbarwrap"><div class="vaultbar usdc" id="vbarUsdc"></div></div>
+          </div>
           <div class="brk" id="brk">⛔ CIRCUIT BREAKER — 일일 출금 한도 도달, 차단</div>
         </div>
         <div class="keypanel">
@@ -332,7 +342,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <button class="btn-green" onclick="playAttack(true)">회복 장치 장착 후 재생</button>
         <button class="btn-ghost" onclick="resetRonin()">초기화</button>
       </div>
-      <p class="keynote"><b>규칙상 유효한 거래 ≠ 경제적으로 정당한 거래.</b> 서명은 진짜였고(탈취된 키로 만든), nonce도 잔액도 문제없었습니다. 프로토콜의 관문은 “누가 서명했나”를 물을 뿐, “이 서명이 정당한가”는 확인하지 못합니다. 그래서 세 가지, <b>권한 / 자금 흐름 / 외부 의존성</b>에 주목해야 합니다.</p>
+      <p class="keynote"><b>규칙상 유효한 거래 ≠ 경제적으로 정당한 거래.</b> 서명은 진짜였고(탈취된 키로 만든), nonce도 잔액도 문제없었습니다. 프로토콜의 관문은 <b>“누가 서명했나”</b>를 물을 뿐, <b>“이 서명이 정당한가”</b>는 확인하지 못합니다. 그래서 세 가지, <b>권한 / 자금 흐름 / 외부 의존성</b>에 주목해야 합니다.</p>
     </div>
   </div>
 </section>
@@ -350,7 +360,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
         <div class="pstage"><div class="ic">🩹</div><b>복구</b><p>보전 · 마이그레이션 · 공시</p></div>
       </div>
       <div class="caption" id="pCap">Ronin은 사고 후 외부 감사 3회, circuit breaker와 일일 5천만 달러 출금 한도를 도입했고, 사용자 자산을 1:1 전액 보전한 뒤 브리지를 재개했습니다. 네 단계가 전부 등장한 사례입니다.</div>
-      <div class="sortlbl">게임 · 이 조치는 어느 단계일까? — 조치를 누르고, 맞는 단계를 누르세요 <span class="sortscore" id="sscore">0 / 8</span></div>
+      <div class="sortlbl">이 조치는 어느 단계일까? — 조치를 누르고, 맞는 단계를 누르세요 <span class="sortscore" id="sscore">0 / 8</span></div>
       <div class="schips" id="schips"></div>
       <div class="sbuckets">
         <button class="sbucket" id="sbucket0" onclick="sTry(0)"><span class="sbucket-title">🛡️ 예방</span><span class="saccepted" id="saccepted0"></span></button>
@@ -371,7 +381,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       <div class="bigmsg"><div class="t">문장 1</div><p>취약점의 <b>존재 여부</b>가 아니라,<br>피해 규모를 키우는 <b>구조적 경로</b>를 보라</p></div>
       <div class="bigmsg"><div class="t">문장 2</div><p>운영자가 무너져도<br>사용자가 <b>스스로 엑시트</b>할 수 있는가</p></div>
     </div>
-    <div class="oneline">6주의 결론 — 블록체인은 규칙을 지키는 기계일 뿐, <b>무엇을 믿을지는 설계자와 사용자의 몫</b>이다</div>
+    <div class="oneline">6주의 결론 — 블록체인은 규칙을 지키는 기계일 뿐, <b>무엇을 믿을지는 설계자와 사용자의 몫</b>입니다</div>
   </div>
 </section>
 
@@ -389,7 +399,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       <div class="stn now">
         <div class="t">2교시 · 지금</div>
         <h4>위험과 회복 설계</h4>
-        <p>그 의존을 <b>세 렌즈</b>로 찾고 회복 경로를 묻는다</p>
+        <p>그 의존을 <b>세 가지 측면</b>에서 찾고 회복 경로를 검사한다</p>
       </div>
       <div class="stn">
         <div class="t">3교시 · 개발</div>
@@ -407,12 +417,12 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <!-- 7 · 산출물 -->
 <section>
   <div class="wrap">
-    <div class="eyebrow"><span class="wk">산출물</span> 마지막 3분 <span class="min">3'</span></div>
-    <h2>프로젝트 하나를 골라 <em>위험과 회복</em>을 적는다</h2>
+    <div class="eyebrow"><span class="wk">정리</span> 마지막 3분 <span class="min">3'</span></div>
+    <h2>프로젝트 하나를 골라 <em>위험과 회복</em>을 적어보세요</h2>
     <div class="outgrid">
       <div class="flowform">
         <div class="fcell"><label><i>위험</i>고른 프로젝트에서 가장 큰 위험이 어디서 발생, 누구에게 영향을 주는지 (한 문장)</label><textarea id="o1" placeholder=""></textarea></div>
-        <div class="fcell"><label><i>회복</i>내가 붙일 회복 장치 하나 — 예방·탐지·차단·복구 중 (한 문장)</label><textarea id="o2" placeholder=""></textarea></div>
+        <div class="fcell"><label><i>회복</i>내가 회복에 유리한 설계를 한다면? (한 문장)</label><textarea id="o2" placeholder=""></textarea></div>
         <div>
           <div class="btnrow" style="margin-top:0">
             <button onclick="submitForm()">구글폼으로 제출</button>
@@ -550,7 +560,7 @@ async function playAttack(protectedMode){
   }else{
     $('vamt').textContent='0 ETH'; $('vamt').className='vaultamt red';
     attackResult(false,'bad','키 탈취 → 서명 통과 → 검증 경보 없음 → 173,600 ETH 전액 유출 · 탐지 지연');
-    cap($('roCap'),'전액 유출 — 블록체인은 한 순간도 멈추지 않았고, 모든 관문은 통과됐습니다. 실제로도 며칠 뒤에야 발견됐습니다.','bad');
+    cap($('roCap'),'전액 유출 — 블록체인은 한 순간도 멈추지 않았고, 모든 검증은 통과됐습니다. 실제로도 며칠 뒤에야 발견됐습니다.','bad');
   }
   roBusy=false;
 }

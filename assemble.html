@@ -72,7 +72,7 @@ button:hover{filter:brightness(1.12)}
 
   <div class="tools">
     <h3>다른 기기에서 작성했다면</h3>
-    <p>각 주차에서 “복사”한 산출물(또는 TXT 내용)을 아래에 통째로 붙여넣고 불러오기를 누르세요. <span class="mono">[BAY18-W#]</span> 태그 기준으로 자동 분류되어 이 브라우저에 저장됩니다.</p>
+    <p>각 주차에서 복사한 내용을 아래에 통째로 붙여넣고 불러오기를 누르세요. <span class="mono">[BAY18-W#]</span> 태그 기준으로 자동 분류되어 이 브라우저에 저장됩니다.</p>
     <textarea id="paste" placeholder="[BAY18-W1] 상태 머신&#10;S0 현재 상태: …&#10;…&#10;[BAY18-W2] 트랜잭션 검증과 전파&#10;…"></textarea>
     <div class="btnrow">
       <button onclick="importPaste()">붙여넣은 내용 불러오기</button>
@@ -116,7 +116,7 @@ function render(){
   }).join('');
   document.getElementById('prog').textContent=done+' / 6 완료';
   const nm=localStorage.getItem('bay18.name');
-  if(nm)document.getElementById('hello').textContent=nm+' 님의 산출물이 자동으로 아래 단계에 꽂힙니다.';
+  if(nm)document.getElementById('hello').textContent=nm+' 님의 정리된 내용들이 자동으로 아래 단계에 꽂힙니다.';
 }
 function importPaste(){
   const raw=document.getElementById('paste').value;

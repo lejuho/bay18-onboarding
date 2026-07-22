@@ -304,7 +304,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
     <div class="eyebrow"><span class="wk">활동 1</span> 기록 3종 세트 <span class="min">~5'</span></div>
     <h2>덮어쓰는 것, 쌓이는 것, <em>방송되는 것</em></h2>
     <div class="stage">
-      <div class="txbanner"><span class="fn">swap</span><span>(토큰A → 토큰B, 10개)</span><span>— 지난주의 그 거래가 방금 실행 완료됐습니다</span></div>
+      <div class="txbanner"><span class="fn">swap</span><span>(토큰A → 토큰B, 10개)</span><span> : 스왑이 방금 실행 완료됐다고 가정합니다.</span></div>
       <div class="records">
         <div class="rec" id="rc0">
           <h4>🗄️ State <span class="mode mode-ow">덮어씀</span></h4>
@@ -330,7 +330,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
       </div>
       <div class="recordsteps">
         <div class="recordstep" id="rs0"><span class="num">1</span><div><b>State · 최신값으로 덮어쓰기</b><p>잔액 세 칸이 새 값으로 덮어써집니다. 이전 값은 현재 state에 남지 않습니다.</p></div></div>
-        <div class="recordstep" id="rs1"><span class="num">2</span><div><b>Receipt · 실행 증빙 추가</b><p>이 거래 전용 증빙 한 장이 발행돼 쌓입니다. 성공 여부와 실제 gas 사용량이 남고, RPC 조회에서는 포함 블록 번호도 확인할 수 있습니다.</p></div></div>
+        <div class="recordstep" id="rs1"><span class="num">2</span><div><b>Receipt · 실행 증빙 추가</b><p>이 거래 전용 증빙 한 장이 발행돼 쌓입니다. 성공 여부와 실제 gas 사용량이 남고, RPC 조회에서는 <b>거래가 포함된 블록 번호</b>도 확인할 수 있습니다.</p></div></div>
         <div class="recordstep" id="rs2"><span class="num">3</span><div><b>Event Log · 외부로 알림</b><p>컨트랙트가 Transfer 이벤트를 기록합니다. 지갑·이더스캔·디앱이 이 알림을 읽습니다.</p></div></div>
       </div>
       <div class="caption" id="rCap">기록하기를 누르면 한 거래의 결과가 세 곳으로 갈라져 남게 됩니다.</div>
@@ -355,7 +355,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">활동 2</span> 실패의 두 얼굴 <span class="min">~5'</span></div>
-    <h2>같은 “실패”여도 <em>남는 기록이 다르다</em></h2>
+    <h2>같은 “실패”여도 <em>남는 기록이 다릅니다</em></h2>
     <div class="stage">
       <div class="quiz" id="qz1">
         <div class="q">예측 — 3주차에서 본 “approve 없는 스왑”의 실패는 블록체인에 기록이 남을까요?</div>
@@ -398,7 +398,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">활동 3</span> 상태의 지문 <span class="min">~3'</span></div>
-    <h2>장부 전체 대신 <em>지문 한 줄</em>을 비교한다</h2>
+    <h2>장부 전체 대신 <em>지문 한 줄</em>만 비교합니다</h2>
     <div class="stage">
       <div class="fp">
         <div class="fpstate">
@@ -437,7 +437,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">활동 4</span> 기록의 물류 — 어디서 태어나 누가 읽나 <span class="min">~4'</span></div>
-    <h2>receipt는 지갑이 아니라 <em>노드에 산다</em></h2>
+    <h2>receipt는 지갑이 아니라 <em>노드에 있습니다</em></h2>
     <div class="stage">
       <div class="logi">
         <div class="zone" id="zNode">
@@ -502,7 +502,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <section>
   <div class="wrap">
     <div class="eyebrow"><span class="wk">연결</span> 오늘 세 교시가 만드는 그림 <span class="min">7'</span></div>
-    <h2>체인마다 <em>상태를 남기는 방식</em>이 다르다</h2>
+    <h2>체인마다 <em>상태를 남기는 방식</em>이 다릅니다</h2>
     <div class="rail3">
       <div class="stn">
         <div class="t">1교시 · 리서치</div>
@@ -530,7 +530,7 @@ button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 <!-- 7 · 산출물 -->
 <section>
   <div class="wrap">
-    <div class="eyebrow"><span class="wk">산출물</span> 두 문장으로 구분하기 <span class="min">3'</span></div>
+    <div class="eyebrow"><span class="wk">정리</span> 두 문장으로 구분하기 <span class="min">3'</span></div>
     <h2>state와 receipt, <em>각각 한 문장</em>으로</h2>
     <div class="outgrid">
       <div class="flowform">
